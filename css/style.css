@@ -1,0 +1,13 @@
+.final-window__table {
+    display: table;
+    border: 2px solid #323a47;
+    border-collapse: collapse;
+    border-spacing: 2px 2px;
+}
+.final-window__table-rows {
+    display: table-row;
+}
+.final-window__table-column {
+    display: table-cell;
+    border: 2px solid #323a47;
+}
