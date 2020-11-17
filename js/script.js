@@ -3,14 +3,14 @@ const button = document.querySelector('#btn');
 
 ////////////////////////////////////////////////////// ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
 const regexpSpace = /\S/g;
-const regexpDash = /[-−–—]/g;
+const regexpDash = /[-|−|–|—]/;
 const regexpColonAndPoint = /:|\./gi;
 
 ////////////////////////////////////////////////////// ОБЩИЕ ФУНКЦИИ
 
 // Функция удаления пробелов из элемента ---УДАЛИТЬ?---
 const deleteSpacesHandler = (element) => {
-    return element = element.match(regexpSpace).join('');
+    return element.match(regexpSpace).join('');
 }
 // Функция исправления регистра в элементе
 const correctionOfRegister = (element) => {
@@ -184,94 +184,95 @@ const findDirector = (array) => {
         if (element.includes('лице, имеющем право без доверенности') || element.includes('Сведения об управляющей организации')) {
             return index;
         }
-    }) || 0;
-    let lastIndex = 0;
-    for (let i = firstIndex; i < array.length; i++) {
-        switch (true) {
-            case array[i].includes('об учредителях (участниках)'):
-                lastIndex = i;
-                i = array.length;
-                break;
-            case array[i].includes('о видах экономической деятельности'):
-                i = array.length;
-                break;
-        }
-    }
-
-    if (firstIndex === 0 || lastIndex === 0) {
-        return 'Единоличный исполнительный орган не определен.'
-    } else if (firstIndex !== 0 && lastIndex !== 0 && array[firstIndex].includes('лице, имеющем право без доверенности')) {
-        let director = {
-            'Тип': 'Единоличный исполнительный орган',
-            'Должность': 'Не определена',
-            'Фамилия': 'Не определена',
-            'Имя': 'Не определено',
-            'Отчество': 'Не определено',
-            'ИНН': 'Не определен',
-        };
-        for (let i = firstIndex; i < lastIndex; i++) {
-            let currentValue = 0;
+    });
+    if (firstIndex !== -1) {
+        let lastIndex = -1;
+        for (let i = firstIndex; i < array.length; i++) {
             switch (true) {
-                case array[i].includes('Фамилия'):
-                    currentValue = createValue(i, lastIndex, 'Фамилия', array[i], array);
-                    currentValue = correctionOfRegister(currentValue);
-                    director['Фамилия'] = currentValue;
+                case array[i].includes('об учредителях (участниках)') || array[i].includes('о держателе реестра акционеров'):
+                    lastIndex = i;
+                    i = array.length;
                     break;
-                case array[i].includes('Имя'):
-                    currentValue = createValue(i, lastIndex, 'Имя', array[i], array);
-                    currentValue = correctionOfRegister(currentValue);
-                    director['Имя'] = currentValue;
-                    break;
-                case array[i].includes('Отчество'):
-                    currentValue = createValue(i, lastIndex, 'Отчество', array[i], array);
-                    currentValue = correctionOfRegister(currentValue);
-                    director['Отчество'] = currentValue;
-                    break;
-                case array[i].includes('ИНН'):
-                    currentValue = createValue(i, lastIndex, 'ИНН', array[i], array);
-                    director['ИНН'] = currentValue;
-                    break;
-                case array[i].includes('Должность'):
-                    currentValue = createValue(i, lastIndex, 'Должность', array[i], array);
-                    currentValue = correctionOfRegister(currentValue);
-                    director['Должность'] = currentValue;
-                    break;
-                case director['Должность'] !== 'Не определена' && director['Фамилия'] !== 'Не определена' && director['Имя'] !== 'Не определено' && director['Отчество'] !== 'Не определено' && director['ИНН'] !== 'Не определен':
-                    i = lastIndex;
+                case array[i].includes('о видах экономической деятельности'):
+                    i = array.length;
                     break;
             }
         }
-        return director;
-    } else if (firstIndex !== 0 && lastIndex !== 0 && array[firstIndex].includes('Сведения об управляющей организации')) {
-        let managingOrganization = {
-            'Тип': 'Управляющая организация',
-            'Полное наименование': 'Не определено',
-            'Полное наименование': 'Не определено',
-            'ОГРН': 'Не определен',
-            'ИНН': 'Не определен',
-        };
-        for (let i = firstIndex; i < lastIndex; i++) {
-            let currentValue = 0;
-            switch (true) {
-                case array[i].includes('Полное наименование'):
-                    currentValue = createValue(i, lastIndex, 'наименование', array[i], array);
-                    managingOrganization['Полное наименование'] = currentValue;
-                    break;
-                case array[i].includes('ОГРН'):
-                    if (!regexpColonAndPoint.test(array[i])) {
-                        currentValue = createValue(i, lastIndex, 'ОГРН', array[i], array);
-                        managingOrganization['ОГРН'] = currentValue;
-                    }
-                    break;
-                case array[i].includes('ИНН'):
-                    currentValue = createValue(i, lastIndex, 'ИНН', array[i], array);
-                    managingOrganization['ИНН'] = currentValue;
-                    break;
+        if (lastIndex !== -1 && array[firstIndex].includes('лице, имеющем право без доверенности')) {
+            let director = {
+                'Тип': 'Единоличный исполнительный орган',
+                'Должность': 'Не определена',
+                'Фамилия': 'Не определена',
+                'Имя': 'Не определено',
+                'Отчество': 'Не определено',
+                'ИНН': 'Не определен',
+            };
+            for (let i = firstIndex; i < lastIndex; i++) {
+                let currentValue = 0;
+                switch (true) {
+                    case array[i].includes('Фамилия'):
+                        currentValue = createValue(i, lastIndex, 'Фамилия', array[i], array);
+                        currentValue = correctionOfRegister(currentValue);
+                        director['Фамилия'] = currentValue;
+                        break;
+                    case array[i].includes('Имя'):
+                        currentValue = createValue(i, lastIndex, 'Имя', array[i], array);
+                        currentValue = correctionOfRegister(currentValue);
+                        director['Имя'] = currentValue;
+                        break;
+                    case array[i].includes('Отчество'):
+                        currentValue = createValue(i, lastIndex, 'Отчество', array[i], array);
+                        currentValue = correctionOfRegister(currentValue);
+                        director['Отчество'] = currentValue;
+                        break;
+                    case array[i].includes('ИНН'):
+                        currentValue = createValue(i, lastIndex, 'ИНН', array[i], array);
+                        director['ИНН'] = currentValue;
+                        break;
+                    case array[i].includes('Должность'):
+                        currentValue = createValue(i, lastIndex, 'Должность', array[i], array);
+                        currentValue = correctionOfRegister(currentValue);
+                        director['Должность'] = currentValue;
+                        break;
+                    case director['Должность'] !== 'Не определена' && director['Фамилия'] !== 'Не определена' && director['Имя'] !== 'Не определено' && director['Отчество'] !== 'Не определено' && director['ИНН'] !== 'Не определен':
+                        i = lastIndex;
+                        break;
+                }
             }
+            return director;
+        } else if (lastIndex !== -1 && array[firstIndex].includes('Сведения об управляющей организации')) {
+            let managingOrganization = {
+                'Тип': 'Управляющая организация',
+                'Полное наименование': 'Не определено',
+                'Полное наименование': 'Не определено',
+                'ОГРН': 'Не определен',
+                'ИНН': 'Не определен',
+            };
+            for (let i = firstIndex; i < lastIndex; i++) {
+                let currentValue = 0;
+                switch (true) {
+                    case array[i].includes('Полное наименование'):
+                        currentValue = createValue(i, lastIndex, 'наименование', array[i], array);
+                        managingOrganization['Полное наименование'] = currentValue;
+                        break;
+                    case array[i].includes('ОГРН'):
+                        if (!regexpColonAndPoint.test(array[i])) {
+                            currentValue = createValue(i, lastIndex, 'ОГРН', array[i], array);
+                            managingOrganization['ОГРН'] = currentValue;
+                        }
+                        break;
+                    case array[i].includes('ИНН'):
+                        currentValue = createValue(i, lastIndex, 'ИНН', array[i], array);
+                        managingOrganization['ИНН'] = currentValue;
+                        break;
+                }
+            }
+            return managingOrganization;
+        } else {
+            return 'Руководитель, действующий от имени юридического лица без доверенности, не определен.'
         }
-        return managingOrganization;
     } else {
-        return 'Единоличный исполнительный орган не определен.'
+        return 'Руководитель, действующий от имени юридического лица без доверенности, не определен.'
     }
 }
 
@@ -292,105 +293,105 @@ const findStatut = (array) => {
         if (element.includes('Наименование документа') && regexpStatut.test(element)) {
             return index;
         }
-    }) || 0;
-
-    let indexStatutDateAndGRN = 0;
-    for (let i = indexStatutName; i < reverseArray.length; i++) {
-        if (reverseArray[i].includes('ГРН и дата')) {
-            indexStatutDateAndGRN = i;
-            i = reverseArray.length;
-        }
-    }
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // ФУНКЦИЯ ФОРМИРОВАНИЯ ЗАПИСИ ОБ УСТАВЕ
-    let makeStatutRecord = (indexName, indexGRN) => {
-        let statutRecord = new StatutRecord();
-
-        let statutNameArray = reverseArray[indexName].split(' ');
-        let indexPositionStatutNameArray = statutNameArray.findIndex((element, index) => {
-            if (element.includes('документа')) {
-                return index;
-            }
-        });
-        let statutName = statutNameArray.slice(indexPositionStatutNameArray + 1, statutNameArray.length).join(' ');
-        statutRecord['Наименование документа'] = statutName;
-        ///////////////////////////////////////
-        let grnArray = reverseArray[indexGRN].split(' ');
-        let indexPositionGRNArray = grnArray.findIndex((element, index) => {
-            if (element.includes('ЕГРЮЛ')) {
-                return index;
-            }
-        });
-        let grn = grnArray.slice(indexPositionGRNArray + 1, grnArray.length).join(' ');
-        statutRecord['ГРН документа'] = grn;
-        ///////////////////////////////////////
-        statutRecord['Дата документа'] = reverseArray[indexGRN - 1];
-        ///////////////////////////////////////
-        let registrationAuthorityArray = [];
-        let isFindElement = false;
-        for (let j = indexGRN - 1; j > 0; j--) {
-            switch (true) {
-                case reverseArray[j].includes('Сведения о документах, представленных'):
-                    isFindElement = false;
-                    j = 0;
-                    break;
-                case reverseArray[j].includes('Наименование регистрирующего органа'):
-                    registrationAuthorityArray.push(reverseArray[j]);
-                    isFindElement = true;
-                    break;
-                case isFindElement:
-                    registrationAuthorityArray.push(reverseArray[j]);
-                    break;
+    });
+    if (indexStatutName !== -1) {
+        let indexStatutDateAndGRN = -1;
+        for (let i = indexStatutName; i < reverseArray.length; i++) {
+            if (reverseArray[i].includes('ГРН и дата')) {
+                indexStatutDateAndGRN = i;
+                i = reverseArray.length;
             }
         }
-        statutRecord['Регистрирующий орган'] = registrationAuthorityArray.slice(2, registrationAuthorityArray.length).join(' ');
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // ФУНКЦИЯ ФОРМИРОВАНИЯ ЗАПИСИ ОБ УСТАВЕ
+        let makeStatutRecord = (indexName, indexGRN) => {
+            let statutRecord = new StatutRecord();
 
-        return statutRecord;
-    }
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // ФОРМИРОВАНИЕ ЗАПИСИ(ЕЙ) ОБ УСТАВЕ
-    if (indexStatutName === 0 || indexStatutDateAndGRN === 0) {
-        return 'Последня версия устава не определена.'
-    } else if (indexStatutName !== 0 && indexStatutDateAndGRN !== 0) {
-        if (reverseArray[indexStatutName].includes('Наименование документа') && regexpStatutChange.test(reverseArray[indexStatutName]) && regexpStatut.test(reverseArray[indexStatutName])) {
-            finalStatutArray.push(makeStatutRecord(indexStatutName, indexStatutDateAndGRN));
-            for (let i = indexStatutDateAndGRN + 1; i < reverseArray.length; i++) {
-                let currentIndexStatutName = 0;
-                let currentIndexStatutDateAndGRN = 0;
+            let statutNameArray = reverseArray[indexName].split(' ');
+            let indexPositionStatutNameArray = statutNameArray.findIndex((element, index) => {
+                if (element.includes('документа')) {
+                    return index;
+                }
+            });
+            let statutName = statutNameArray.slice(indexPositionStatutNameArray + 1, statutNameArray.length).join(' ');
+            statutRecord['Наименование документа'] = statutName;
+            ///////////////////////////////////////
+            let grnArray = reverseArray[indexGRN].split(' ');
+            let indexPositionGRNArray = grnArray.findIndex((element, index) => {
+                if (element.includes('ЕГРЮЛ')) {
+                    return index;
+                }
+            });
+            let grn = grnArray.slice(indexPositionGRNArray + 1, grnArray.length).join(' ');
+            statutRecord['ГРН документа'] = grn;
+            ///////////////////////////////////////
+            statutRecord['Дата документа'] = reverseArray[indexGRN - 1];
+            ///////////////////////////////////////
+            let registrationAuthorityArray = [];
+            let isFindElement = false;
+            for (let j = indexGRN - 1; j > 0; j--) {
                 switch (true) {
-                    case reverseArray[i].includes('Наименование документа') && regexpStatutChange.test(reverseArray[i]) && regexpStatut.test(reverseArray[i]):
-                        currentIndexStatutName = i;
-                        for (let j = currentIndexStatutName; j < reverseArray.length; j++) {
-                            if (reverseArray[j].includes('ГРН и дата')) {
-                                currentIndexStatutDateAndGRN = j;
-                                i = j + 1;
-                                j = reverseArray.length;
-                                finalStatutArray.push(makeStatutRecord(currentIndexStatutName, currentIndexStatutDateAndGRN));
-                            }
-                        }
+                    case reverseArray[j].includes('Сведения о документах, представленных'):
+                        isFindElement = false;
+                        j = 0;
                         break;
-                    case reverseArray[i].includes('Наименование документа') && regexpStatut.test(reverseArray[i]) && !regexpStatutChange.test(reverseArray[i]):
-                        currentIndexStatutName = i;
-                        for (let j = currentIndexStatutName; j < reverseArray.length; j++) {
-                            if (reverseArray[j].includes('ГРН и дата')) {
-                                currentIndexStatutDateAndGRN = j;
-                                j = reverseArray.length;
-                                i = reverseArray.length;
-                                finalStatutArray.push(makeStatutRecord(currentIndexStatutName, currentIndexStatutDateAndGRN));
-                            }
-                        }
+                    case reverseArray[j].includes('Наименование регистрирующего органа'):
+                        registrationAuthorityArray.push(reverseArray[j]);
+                        isFindElement = true;
+                        break;
+                    case isFindElement:
+                        registrationAuthorityArray.push(reverseArray[j]);
                         break;
                 }
             }
-            return finalStatutArray;
+            statutRecord['Регистрирующий орган'] = registrationAuthorityArray.slice(2, registrationAuthorityArray.length).join(' ');
+
+            return statutRecord;
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // ФОРМИРОВАНИЕ ЗАПИСИ(ЕЙ) ОБ УСТАВЕ
+        if (indexStatutDateAndGRN !== -1) {
+            if (reverseArray[indexStatutName].includes('Наименование документа') && regexpStatutChange.test(reverseArray[indexStatutName]) && regexpStatut.test(reverseArray[indexStatutName])) {
+                finalStatutArray.push(makeStatutRecord(indexStatutName, indexStatutDateAndGRN));
+                for (let i = indexStatutDateAndGRN + 1; i < reverseArray.length; i++) {
+                    let currentIndexStatutName = 0;
+                    let currentIndexStatutDateAndGRN = 0;
+                    switch (true) {
+                        case reverseArray[i].includes('Наименование документа') && regexpStatutChange.test(reverseArray[i]) && regexpStatut.test(reverseArray[i]):
+                            currentIndexStatutName = i;
+                            for (let j = currentIndexStatutName; j < reverseArray.length; j++) {
+                                if (reverseArray[j].includes('ГРН и дата')) {
+                                    currentIndexStatutDateAndGRN = j;
+                                    i = j + 1;
+                                    j = reverseArray.length;
+                                    finalStatutArray.push(makeStatutRecord(currentIndexStatutName, currentIndexStatutDateAndGRN));
+                                }
+                            }
+                            break;
+                        case reverseArray[i].includes('Наименование документа') && regexpStatut.test(reverseArray[i]) && !regexpStatutChange.test(reverseArray[i]):
+                            currentIndexStatutName = i;
+                            for (let j = currentIndexStatutName; j < reverseArray.length; j++) {
+                                if (reverseArray[j].includes('ГРН и дата')) {
+                                    currentIndexStatutDateAndGRN = j;
+                                    j = reverseArray.length;
+                                    i = reverseArray.length;
+                                    finalStatutArray.push(makeStatutRecord(currentIndexStatutName, currentIndexStatutDateAndGRN));
+                                }
+                            }
+                            break;
+                    }
+                }
+                return finalStatutArray;
+            } else {
+                finalStatutArray.push(makeStatutRecord(indexStatutName, indexStatutDateAndGRN));
+                return finalStatutArray;
+            }
         } else {
-            finalStatutArray.push(makeStatutRecord(indexStatutName, indexStatutDateAndGRN));
-            return finalStatutArray;
+            return 'Сведения об уставе не обнаружены.'
         }
     } else {
-        return 'Последня версия устава не определена.'
+        return 'Сведения об уставе не обнаружены.'
     }
-
 }
 
 const findAllChangeStatutRecordsHandler = (array) => {
@@ -410,340 +411,352 @@ const findFounders = (array) => {
         if (element.includes('об учредителях (участниках)')) {
             return index;
         }
-    }) || 0;
-    let lastIndex = 0;
-    for (let i = firstIndex; i < array.length; i++) {
-        switch (true) {
-            case array[i].includes('о держателе реестра акционеров') || array[i].includes('о видах экономической деятельности'):
-                lastIndex = i;
-                i = array.length;
-                break;
-            case array[i].includes('о записях, внесенных в Единый государственный реестр'):
-                i = array.length;
-                break;
-        }
-    }
-    let isStockCompany = false;
-    if (array[firstIndex + 1].includes('В соответствии')) {
-        isStockCompany = true;
-    }
-    let isMoreThenOneFounder = false;
-    if (+array[firstIndex + 1] === 1) {
-        isMoreThenOneFounder = true;
-    }
-    if (isStockCompany && +array[firstIndex + 6] === 1) {
-        isMoreThenOneFounder = true;
-    }
-    // Конструкторы объектов записей
-    function NaturalPersonRecord() {
-        this['Участник (учредитель)'] = 'Физическое лицо';
-        this['Фамилия'] = 'Не определена';
-        this['Имя'] = 'Не определено';
-        this['Отчество'] = 'Не определено';
-        this['ИНН'] = 'Не определен';
-        this['Размер доли'] = 'Не определен';
-        this['Номинальная стоимость доли'] = 'Не определена';
-        this['Вид обременения'] = 'Не определен';
-    };
-    function LegalPersonRussianRecord() {
-        this['Участник (учредитель)'] = 'Юридическое лицо';
-        this['Полное наименование'] = 'Не определено';
-        this['ОГРН'] = 'Не определен';
-        this['ИНН'] = 'Не определен';
-        this['Размер доли'] = 'Не определен';
-        this['Номинальная стоимость доли'] = 'Не определена';
-        this['Вид обременения'] = 'Не определен';
-    };
-    function LegalPersonForeignRecord() {
-        this['Участник (учредитель)'] = 'Иностранное юридическое лицо';
-        this['Полное наименование'] = 'Не определено';
-        this['Страна происхождения'] = 'Не определена';
-        this['Дата регистрации'] = 'Не определена';
-        this['Регистрационный номер'] = 'Не определен';
-        this['Наименование регистрирующего органа'] = 'Не определено';
-        this['Адрес (место нахождения) в стране происхождения'] = 'Не определен';
-        this['Размер доли'] = 'Не определен';
-        this['Номинальная стоимость доли'] = 'Не определена';
-        this['Вид обременения'] = 'Не определен';
-    };
-    // Функции формирования записей
-    let detectNaturalPerson = (firstIndex, lastIndex) => {
-        let naturalPersonRecord = new NaturalPersonRecord();
-        for (let i = firstIndex; i < lastIndex; i++) {
-            let currentValue = 0;
+    });
+    if (firstIndex !== -1) {
+        let lastIndex = -1;
+        for (let i = firstIndex; i < array.length; i++) {
             switch (true) {
-                case array[i].includes('Фамилия') && naturalPersonRecord['Фамилия'] === 'Не определена':
-                    currentValue = createValue(i, lastIndex, 'Фамилия', array[i], array);
-                    currentValue = correctionOfRegister(currentValue);
-                    naturalPersonRecord['Фамилия'] = currentValue;
+                case array[i].includes('о держателе реестра акционеров') || array[i].includes('о видах экономической деятельности'):
+                    lastIndex = i;
+                    i = array.length;
                     break;
-                case array[i].includes('Имя') && naturalPersonRecord['Имя'] === 'Не определено':
-                    currentValue = createValue(i, lastIndex, 'Имя', array[i], array);
-                    currentValue = correctionOfRegister(currentValue);
-                    naturalPersonRecord['Имя'] = currentValue;
-                    break;
-                case array[i].includes('Отчество') && naturalPersonRecord['Отчество'] === 'Не определено':
-                    currentValue = createValue(i, lastIndex, 'Отчество', array[i], array);
-                    currentValue = correctionOfRegister(currentValue);
-                    naturalPersonRecord['Отчество'] = currentValue;
-                    break;
-                case array[i].includes('ИНН') && naturalPersonRecord['ИНН'] === 'Не определен':
-                    currentValue = createValue(i, lastIndex, 'ИНН', array[i], array);
-                    naturalPersonRecord['ИНН'] = currentValue;
-                    break;
-                case array[i].includes('Размер доли') && naturalPersonRecord['Размер доли'] === 'Не определен':
-                    let temporaryValueShare = 'процентах';
-                    if (array[i].includes('дроби')) {
-                        temporaryValueShare = 'дроби';
-                    }
-                    currentValue = createValue(i, lastIndex, temporaryValueShare, array[i], array);
-                    naturalPersonRecord['Размер доли'] = currentValue;
-                    break;
-                case array[i].includes('Номинальная стоимость') && naturalPersonRecord['Номинальная стоимость доли'] === 'Не определена':
-                    currentValue = createValue(i, lastIndex, 'рублях', array[i], array);
-                    naturalPersonRecord['Номинальная стоимость доли'] = currentValue;
-                    break;
-                case array[i].includes('Вид обременения') && naturalPersonRecord['Вид обременения'] === 'Не определен':
-                    currentValue = createValue(i, lastIndex, 'обременени', array[i], array);
-                    naturalPersonRecord['Вид обременения'] = currentValue;
+                case array[i].includes('о записях, внесенных в Единый государственный реестр'):
+                    lastIndex = i;
+                    i = array.length;
                     break;
             }
         }
-        return naturalPersonRecord;
-    }
-    let detectLegalPersonRussian = (firstIndex, lastIndex) => {
-        let legalPersonRussianRecord = new LegalPersonRussianRecord();
-        for (let i = firstIndex; i < lastIndex; i++) {
-            let currentValue = 0;
-            switch (true) {
-                case array[i].includes('Полное наименование') && legalPersonRussianRecord['Полное наименование'] === 'Не определено':
-                    currentValue = createValue(i, lastIndex, 'наименование', array[i], array);
-                    legalPersonRussianRecord['Полное наименование'] = currentValue;
-                    break;
-                case array[i].includes('ОГРН') && legalPersonRussianRecord['ОГРН'] === 'Не определен':
-                    if (!regexpColonAndPoint.test(array[i])) {
-                        currentValue = createValue(i, lastIndex, 'ОГРН', array[i], array);
-                        legalPersonRussianRecord['ОГРН'] = currentValue;
-                    }
-                    break;
-                case array[i].includes('ИНН') && legalPersonRussianRecord['ИНН'] === 'Не определен':
-                    currentValue = createValue(i, lastIndex, 'ИНН', array[i], array);
-                    legalPersonRussianRecord['ИНН'] = currentValue;
-                    break;
-                case array[i].includes('Размер доли') && legalPersonRussianRecord['Размер доли'] === 'Не определен':
-                    let temporaryValueShare = 'процентах';
-                    if (array[i].includes('дроби')) {
-                        temporaryValueShare = 'дроби';
-                    }
-                    currentValue = createValue(i, lastIndex, temporaryValueShare, array[i], array);
-                    legalPersonRussianRecord['Размер доли'] = currentValue;
-                    break;
-                case array[i].includes('Номинальная стоимость') && legalPersonRussianRecord['Номинальная стоимость доли'] === 'Не определена':
-                    currentValue = createValue(i, lastIndex, 'рублях', array[i], array);
-                    legalPersonRussianRecord['Номинальная стоимость доли'] = currentValue;
-                    break;
-                case array[i].includes('Вид обременения') && legalPersonRussianRecord['Вид обременения'] === 'Не определен':
-                    currentValue = createValue(i, lastIndex, 'обременени', array[i], array);
-                    legalPersonRussianRecord['Вид обременения'] = currentValue;
-                    break;
-            }
+        let isStockCompany = false;
+        if (array[firstIndex + 1].includes('В соответствии')) {
+            isStockCompany = true;
         }
-        return legalPersonRussianRecord;
-    }
-    let detectLegalPersonForeign = (firstIndex, lastIndex) => {
-        let legalPersonForeignRecord = new LegalPersonForeignRecord();
-        for (let i = firstIndex; i < lastIndex; i++) {
-            let currentValue = 0;
-            switch (true) {
-                case array[i].includes('Полное наименование') && legalPersonForeignRecord['Полное наименование'] === 'Не определено':
-                    currentValue = createValue(i, lastIndex, 'наименование', array[i], array);
-                    legalPersonForeignRecord['Полное наименование'] = currentValue;
-                    break;
-                case array[i].includes('Страна происхождения') && legalPersonForeignRecord['Страна происхождения'] === 'Не определена':
-                    currentValue = createValue(i, lastIndex, 'происхождения', array[i], array);
-                    legalPersonForeignRecord['Страна происхождения'] = currentValue;
-                    break;
-                case array[i].includes('Дата регистрации') && legalPersonForeignRecord['Дата регистрации'] === 'Не определена':
-                    currentValue = createValue(i, lastIndex, 'регистрации', array[i], array);
-                    legalPersonForeignRecord['Дата регистрации'] = currentValue;
-                    break;
-                case array[i].includes('Регистрационный номер') && legalPersonForeignRecord['Регистрационный номер'] === 'Не определен':
-                    currentValue = createValue(i, lastIndex, 'номер', array[i], array);
-                    legalPersonForeignRecord['Регистрационный номер'] = currentValue;
-                    break;
-                case array[i].includes('Наименование регистрирующего органа') && legalPersonForeignRecord['Наименование регистрирующего органа'] === 'Не определено':
-                    currentValue = createValue(i, lastIndex, 'органа', array[i], array);
-                    legalPersonForeignRecord['Наименование регистрирующего органа'] = currentValue;
-                    break;
-                case array[i].includes('Адрес (место нахождения) в стране') && legalPersonForeignRecord['Адрес (место нахождения) в стране происхождения'] === 'Не определен':
-                    let temporaryValue = array[i];
-                    let temporaryIndex = i;
-                    if (array[i + 1].includes('происхождения')) {
-                        temporaryValue = `${temporaryValue} ${array[i + 1]} ${array[i + 2]}`;
-                        temporaryIndex += 2;
-                    }
-                    currentValue = createValue(temporaryIndex, lastIndex, 'происхождения', temporaryValue, array);
-                    legalPersonForeignRecord['Адрес (место нахождения) в стране происхождения'] = currentValue;
-                    break;
-                case array[i].includes('Размер доли') && legalPersonForeignRecord['Размер доли'] === 'Не определен':
-                    let temporaryValueShare = 'процентах';
-                    if (array[i].includes('дроби')) {
-                        temporaryValueShare = 'дроби';
-                    }
-                    currentValue = createValue(i, lastIndex, temporaryValueShare, array[i], array);
-                    legalPersonForeignRecord['Размер доли'] = currentValue;
-                    break;
-                case array[i].includes('Номинальная стоимость') && legalPersonForeignRecord['Номинальная стоимость доли'] === 'Не определена':
-                    currentValue = createValue(i, lastIndex, 'рублях', array[i], array);
-                    legalPersonForeignRecord['Номинальная стоимость доли'] = currentValue;
-                    break;
-                case array[i].includes('Вид обременения') && legalPersonForeignRecord['Вид обременения'] === 'Не определен':
-                    currentValue = createValue(i, lastIndex, 'обременени', array[i], array);
-                    legalPersonForeignRecord['Вид обременения'] = currentValue;
-                    break;
-            }
+        let isMoreThenOneFounder = false;
+        if (+array[firstIndex + 1] === 1) {
+            isMoreThenOneFounder = true;
         }
-        return legalPersonForeignRecord;
-    }
-    // Формирование записи(ей) об учредителях (участниках)
-    if (firstIndex === 0 || lastIndex === 0) {
-        return 'Участники (учредители) не определены.';
-    } else if (firstIndex !== 0 && lastIndex !== 0 && !isMoreThenOneFounder) {
-        let isNaturalPerson = false;
-        let isLegalPerson = false;
-        let isLegalPersonForeign = false;
-        for (let i = firstIndex; i < lastIndex; i++) {
-            switch (true) {
-                case !isLegalPerson && array[i].includes('Фамилия'):
-                    isNaturalPerson = true;
-                    break;
-                case !isNaturalPerson && array[i].includes('Полное наименование'):
-                    isLegalPerson = true;
-                    break;
-                case array[i].includes('Страна происхождения') && isLegalPerson:
-                    isLegalPerson = false;
-                    isLegalPersonForeign = true;
-                    break;
-            }
-            switch (true) {
-                case isNaturalPerson && !isLegalPerson && !isLegalPersonForeign:
-                    finalFoundersArray.push(detectNaturalPerson(firstIndex, lastIndex));
-                    i = lastIndex;
-                    break;
-                case isLegalPerson && !isLegalPersonForeign && i === lastIndex - 1:
-                    finalFoundersArray.push(detectLegalPersonRussian(firstIndex, lastIndex));
-                    i = lastIndex;
-                    break;
-                case !isLegalPerson && isLegalPersonForeign && i === lastIndex - 1:
-                    finalFoundersArray.push(legalPersonForeignRecord(firstIndex, lastIndex));
-                    i = lastIndex;
-                    break;
-            }
+        if (isStockCompany && +array[firstIndex + 6] === 1) {
+            isMoreThenOneFounder = true;
         }
-        return finalFoundersArray;
-    } else if (firstIndex !== 0 && lastIndex !== 0 && isMoreThenOneFounder) {
-        let counterOfTheFounders = 1;
-        let firstIndexCurrentFounder = firstIndex + 1;
-        if (isStockCompany) {
-            firstIndexCurrentFounder = firstIndex + 6;
-        }
-        let lastIndexCurrentFounder = 0;
-        let isNaturalPerson = false;
-        let isLegalPerson = false;
-        let isLegalPersonForeign = false;
-        for (let i = firstIndexCurrentFounder; i < lastIndex; i++) {
-            switch (true) {
-                case lastIndexCurrentFounder === 0 && i === lastIndex - 1:
-                    lastIndexCurrentFounder = i;
-                    break;
-                case +array[i] === counterOfTheFounders + 1:
-                    counterOfTheFounders++;
-                    lastIndexCurrentFounder = i;
-                    break;
-                case !isLegalPerson && array[i].includes('Фамилия'):
-                    isNaturalPerson = true;
-                    break;
-                case !isNaturalPerson && array[i].includes('Полное наименование'):
-                    isLegalPerson = true;
-                    break;
-                case array[i].includes('Страна происхождения') && isLegalPerson:
-                    isLegalPerson = false;
-                    isLegalPersonForeign = true;
-                    break;
+        // Конструкторы объектов записей
+        function NaturalPersonRecord() {
+            this['Участник (учредитель)'] = 'Физическое лицо';
+            this['Фамилия'] = 'Не определена';
+            this['Имя'] = 'Не определено';
+            this['Отчество'] = 'Не определено';
+            this['ИНН'] = 'Не определен';
+            this['Размер доли'] = 'Не определен';
+            this['Номинальная стоимость доли'] = 'Не определена';
+            this['Вид обременения'] = 'Не определен';
+        };
+        function LegalPersonRussianRecord() {
+            this['Участник (учредитель)'] = 'Юридическое лицо';
+            this['Полное наименование'] = 'Не определено';
+            this['ОГРН'] = 'Не определен';
+            this['ИНН'] = 'Не определен';
+            this['Размер доли'] = 'Не определен';
+            this['Номинальная стоимость доли'] = 'Не определена';
+            this['Вид обременения'] = 'Не определен';
+        };
+        function LegalPersonForeignRecord() {
+            this['Участник (учредитель)'] = 'Иностранное юридическое лицо';
+            this['Полное наименование'] = 'Не определено';
+            this['Страна происхождения'] = 'Не определена';
+            this['Дата регистрации'] = 'Не определена';
+            this['Регистрационный номер'] = 'Не определен';
+            this['Наименование регистрирующего органа'] = 'Не определено';
+            this['Адрес (место нахождения) в стране происхождения'] = 'Не определен';
+            this['Размер доли'] = 'Не определен';
+            this['Номинальная стоимость доли'] = 'Не определена';
+            this['Вид обременения'] = 'Не определен';
+        };
+        // Функции формирования записей
+        let detectNaturalPerson = (firstIndex, lastIndex) => {
+            let naturalPersonRecord = new NaturalPersonRecord();
+            for (let i = firstIndex; i < lastIndex; i++) {
+                let currentValue = 0;
+                switch (true) {
+                    case array[i].includes('Фамилия') && naturalPersonRecord['Фамилия'] === 'Не определена':
+                        currentValue = createValue(i, lastIndex, 'Фамилия', array[i], array);
+                        currentValue = correctionOfRegister(currentValue);
+                        naturalPersonRecord['Фамилия'] = currentValue;
+                        break;
+                    case array[i].includes('Имя') && naturalPersonRecord['Имя'] === 'Не определено':
+                        currentValue = createValue(i, lastIndex, 'Имя', array[i], array);
+                        currentValue = correctionOfRegister(currentValue);
+                        naturalPersonRecord['Имя'] = currentValue;
+                        break;
+                    case array[i].includes('Отчество') && naturalPersonRecord['Отчество'] === 'Не определено':
+                        currentValue = createValue(i, lastIndex, 'Отчество', array[i], array);
+                        currentValue = correctionOfRegister(currentValue);
+                        naturalPersonRecord['Отчество'] = currentValue;
+                        break;
+                    case array[i].includes('ИНН') && naturalPersonRecord['ИНН'] === 'Не определен':
+                        currentValue = createValue(i, lastIndex, 'ИНН', array[i], array);
+                        naturalPersonRecord['ИНН'] = currentValue;
+                        break;
+                    case array[i].includes('Размер доли') && naturalPersonRecord['Размер доли'] === 'Не определен':
+                        let temporaryValueShare = 'процентах';
+                        if (array[i].includes('дроби')) {
+                            temporaryValueShare = 'дроби';
+                        }
+                        currentValue = createValue(i, lastIndex, temporaryValueShare, array[i], array);
+                        naturalPersonRecord['Размер доли'] = currentValue;
+                        break;
+                    case array[i].includes('Номинальная стоимость') && naturalPersonRecord['Номинальная стоимость доли'] === 'Не определена':
+                        currentValue = createValue(i, lastIndex, 'рублях', array[i], array);
+                        naturalPersonRecord['Номинальная стоимость доли'] = currentValue;
+                        break;
+                    case array[i].includes('Вид обременения') && naturalPersonRecord['Вид обременения'] === 'Не определен':
+                        currentValue = createValue(i, lastIndex, 'обременени', array[i], array);
+                        naturalPersonRecord['Вид обременения'] = currentValue;
+                        break;
+                }
             }
-            switch (true) {
-                case lastIndexCurrentFounder !== 0 && isNaturalPerson:
-                    finalFoundersArray.push(detectNaturalPerson(firstIndexCurrentFounder, lastIndexCurrentFounder));
-                    firstIndexCurrentFounder = lastIndexCurrentFounder;
-                    lastIndexCurrentFounder = 0;
-                    isNaturalPerson = false;
-                    break;
-                case lastIndexCurrentFounder !== 0 && isLegalPerson:
-                    finalFoundersArray.push(detectLegalPersonRussian(firstIndexCurrentFounder, lastIndexCurrentFounder));
-                    firstIndexCurrentFounder = lastIndexCurrentFounder;
-                    lastIndexCurrentFounder = 0;
-                    isLegalPerson = false;
-                    break;
-                case lastIndexCurrentFounder !== 0 && isLegalPersonForeign:
-                    finalFoundersArray.push(detectLegalPersonForeign(firstIndexCurrentFounder, lastIndexCurrentFounder));
-                    firstIndexCurrentFounder = lastIndexCurrentFounder;
-                    lastIndexCurrentFounder = 0;
-                    isLegalPersonForeign = false;
-                    break;
-            }
+            return naturalPersonRecord;
         }
-        return finalFoundersArray;
+        let detectLegalPersonRussian = (firstIndex, lastIndex) => {
+            let legalPersonRussianRecord = new LegalPersonRussianRecord();
+            for (let i = firstIndex; i < lastIndex; i++) {
+                let currentValue = 0;
+                switch (true) {
+                    case array[i].includes('Полное наименование') && legalPersonRussianRecord['Полное наименование'] === 'Не определено':
+                        currentValue = createValue(i, lastIndex, 'наименование', array[i], array);
+                        legalPersonRussianRecord['Полное наименование'] = currentValue;
+                        break;
+                    case array[i].includes('ОГРН') && legalPersonRussianRecord['ОГРН'] === 'Не определен':
+                        if (!regexpColonAndPoint.test(array[i])) {
+                            currentValue = createValue(i, lastIndex, 'ОГРН', array[i], array);
+                            legalPersonRussianRecord['ОГРН'] = currentValue;
+                        }
+                        break;
+                    case array[i].includes('ИНН') && legalPersonRussianRecord['ИНН'] === 'Не определен':
+                        currentValue = createValue(i, lastIndex, 'ИНН', array[i], array);
+                        legalPersonRussianRecord['ИНН'] = currentValue;
+                        break;
+                    case array[i].includes('Размер доли') && legalPersonRussianRecord['Размер доли'] === 'Не определен':
+                        let temporaryValueShare = 'процентах';
+                        if (array[i].includes('дроби')) {
+                            temporaryValueShare = 'дроби';
+                        }
+                        currentValue = createValue(i, lastIndex, temporaryValueShare, array[i], array);
+                        legalPersonRussianRecord['Размер доли'] = currentValue;
+                        break;
+                    case array[i].includes('Номинальная стоимость') && legalPersonRussianRecord['Номинальная стоимость доли'] === 'Не определена':
+                        currentValue = createValue(i, lastIndex, 'рублях', array[i], array);
+                        legalPersonRussianRecord['Номинальная стоимость доли'] = currentValue;
+                        break;
+                    case array[i].includes('Вид обременения') && legalPersonRussianRecord['Вид обременения'] === 'Не определен':
+                        currentValue = createValue(i, lastIndex, 'обременени', array[i], array);
+                        legalPersonRussianRecord['Вид обременения'] = currentValue;
+                        break;
+                }
+            }
+            return legalPersonRussianRecord;
+        }
+        let detectLegalPersonForeign = (firstIndex, lastIndex) => {
+            let legalPersonForeignRecord = new LegalPersonForeignRecord();
+            for (let i = firstIndex; i < lastIndex; i++) {
+                let currentValue = 0;
+                switch (true) {
+                    case array[i].includes('Полное наименование') && legalPersonForeignRecord['Полное наименование'] === 'Не определено':
+                        currentValue = createValue(i, lastIndex, 'наименование', array[i], array);
+                        legalPersonForeignRecord['Полное наименование'] = currentValue;
+                        break;
+                    case array[i].includes('Страна происхождения') && legalPersonForeignRecord['Страна происхождения'] === 'Не определена':
+                        currentValue = createValue(i, lastIndex, 'происхождения', array[i], array);
+                        legalPersonForeignRecord['Страна происхождения'] = currentValue;
+                        break;
+                    case array[i].includes('Дата регистрации') && legalPersonForeignRecord['Дата регистрации'] === 'Не определена':
+                        currentValue = createValue(i, lastIndex, 'регистрации', array[i], array);
+                        legalPersonForeignRecord['Дата регистрации'] = currentValue;
+                        break;
+                    case array[i].includes('Регистрационный номер') && legalPersonForeignRecord['Регистрационный номер'] === 'Не определен':
+                        currentValue = createValue(i, lastIndex, 'номер', array[i], array);
+                        legalPersonForeignRecord['Регистрационный номер'] = currentValue;
+                        break;
+                    case array[i].includes('Наименование регистрирующего органа') && legalPersonForeignRecord['Наименование регистрирующего органа'] === 'Не определено':
+                        currentValue = createValue(i, lastIndex, 'органа', array[i], array);
+                        legalPersonForeignRecord['Наименование регистрирующего органа'] = currentValue;
+                        break;
+                    case array[i].includes('Адрес (место нахождения) в стране') && legalPersonForeignRecord['Адрес (место нахождения) в стране происхождения'] === 'Не определен':
+                        let temporaryValue = array[i];
+                        let temporaryIndex = i;
+                        if (array[i + 1].includes('происхождения')) {
+                            temporaryValue = `${temporaryValue} ${array[i + 1]} ${array[i + 2]}`;
+                            temporaryIndex += 2;
+                        }
+                        currentValue = createValue(temporaryIndex, lastIndex, 'происхождения', temporaryValue, array);
+                        legalPersonForeignRecord['Адрес (место нахождения) в стране происхождения'] = currentValue;
+                        break;
+                    case array[i].includes('Размер доли') && legalPersonForeignRecord['Размер доли'] === 'Не определен':
+                        let temporaryValueShare = 'процентах';
+                        if (array[i].includes('дроби')) {
+                            temporaryValueShare = 'дроби';
+                        }
+                        currentValue = createValue(i, lastIndex, temporaryValueShare, array[i], array);
+                        legalPersonForeignRecord['Размер доли'] = currentValue;
+                        break;
+                    case array[i].includes('Номинальная стоимость') && legalPersonForeignRecord['Номинальная стоимость доли'] === 'Не определена':
+                        currentValue = createValue(i, lastIndex, 'рублях', array[i], array);
+                        legalPersonForeignRecord['Номинальная стоимость доли'] = currentValue;
+                        break;
+                    case array[i].includes('Вид обременения') && legalPersonForeignRecord['Вид обременения'] === 'Не определен':
+                        currentValue = createValue(i, lastIndex, 'обременени', array[i], array);
+                        legalPersonForeignRecord['Вид обременения'] = currentValue;
+                        break;
+                }
+            }
+            return legalPersonForeignRecord;
+        }
+        // Формирование записи(ей) об учредителях (участниках)
+        if (lastIndex !== -1 && !isMoreThenOneFounder) {
+            let isNaturalPerson = false;
+            let isLegalPerson = false;
+            let isLegalPersonForeign = false;
+            for (let i = firstIndex; i < lastIndex; i++) {
+                switch (true) {
+                    case !isLegalPerson && array[i].includes('Фамилия'):
+                        isNaturalPerson = true;
+                        break;
+                    case !isNaturalPerson && array[i].includes('Полное наименование'):
+                        isLegalPerson = true;
+                        break;
+                    case array[i].includes('Страна происхождения') && isLegalPerson:
+                        isLegalPerson = false;
+                        isLegalPersonForeign = true;
+                        break;
+                }
+                switch (true) {
+                    case isNaturalPerson && !isLegalPerson && !isLegalPersonForeign:
+                        finalFoundersArray.push(detectNaturalPerson(firstIndex, lastIndex));
+                        i = lastIndex;
+                        break;
+                    case isLegalPerson && !isLegalPersonForeign && i === lastIndex - 1:
+                        finalFoundersArray.push(detectLegalPersonRussian(firstIndex, lastIndex));
+                        i = lastIndex;
+                        break;
+                    case !isLegalPerson && isLegalPersonForeign && i === lastIndex - 1:
+                        finalFoundersArray.push(legalPersonForeignRecord(firstIndex, lastIndex));
+                        i = lastIndex;
+                        break;
+                }
+            }
+            return finalFoundersArray;
+        } else if (lastIndex !== -1 && isMoreThenOneFounder) {
+            let counterOfTheFounders = 1;
+            let firstIndexCurrentFounder = firstIndex + 1;
+            if (isStockCompany) {
+                firstIndexCurrentFounder = firstIndex + 6;
+            }
+            let lastIndexCurrentFounder = 0;
+            let isNaturalPerson = false;
+            let isLegalPerson = false;
+            let isLegalPersonForeign = false;
+            for (let i = firstIndexCurrentFounder; i < lastIndex; i++) {
+                switch (true) {
+                    case lastIndexCurrentFounder === 0 && i === lastIndex - 1:
+                        lastIndexCurrentFounder = i;
+                        break;
+                    case +array[i] === counterOfTheFounders + 1:
+                        counterOfTheFounders++;
+                        lastIndexCurrentFounder = i;
+                        break;
+                    case !isLegalPerson && array[i].includes('Фамилия'):
+                        isNaturalPerson = true;
+                        break;
+                    case !isNaturalPerson && array[i].includes('Полное наименование'):
+                        isLegalPerson = true;
+                        break;
+                    case array[i].includes('Страна происхождения') && isLegalPerson:
+                        isLegalPerson = false;
+                        isLegalPersonForeign = true;
+                        break;
+                }
+                switch (true) {
+                    case lastIndexCurrentFounder !== 0 && isNaturalPerson:
+                        finalFoundersArray.push(detectNaturalPerson(firstIndexCurrentFounder, lastIndexCurrentFounder));
+                        firstIndexCurrentFounder = lastIndexCurrentFounder;
+                        lastIndexCurrentFounder = 0;
+                        isNaturalPerson = false;
+                        break;
+                    case lastIndexCurrentFounder !== 0 && isLegalPerson:
+                        finalFoundersArray.push(detectLegalPersonRussian(firstIndexCurrentFounder, lastIndexCurrentFounder));
+                        firstIndexCurrentFounder = lastIndexCurrentFounder;
+                        lastIndexCurrentFounder = 0;
+                        isLegalPerson = false;
+                        break;
+                    case lastIndexCurrentFounder !== 0 && isLegalPersonForeign:
+                        finalFoundersArray.push(detectLegalPersonForeign(firstIndexCurrentFounder, lastIndexCurrentFounder));
+                        firstIndexCurrentFounder = lastIndexCurrentFounder;
+                        lastIndexCurrentFounder = 0;
+                        isLegalPersonForeign = false;
+                        break;
+                }
+            }
+            return finalFoundersArray;
+        } else {
+            return 'Участники (учредители) не определены.';
+        }
     } else {
         return 'Участники (учредители) не определены.';
     }
 }
 
-const makeAdress = (array) => {
-    let adressArray = [];
+const makeAddress = (array) => {
+    let addressArray = [];
     let firstIndex = array.findIndex((element, index) => {
         if (element.includes('Адрес (место нахождения)')) {
             return index;
         }
-    }) || 0;
-    let lastIndex = 0;
-    for (let i = firstIndex; i < array.length; i++) {
-        switch (true) {
-            case array[i].includes('Сведения о регистрации'):
-                lastIndex = i;
-                i = array.length;
-                break;
-            case array[i].includes('о регистрирующем органе по месту'):
-                i = array.length;
-                break;
-        }
-    }
-
-    if (firstIndex === 0 || lastIndex === 0) {
-        return 'Адрес (место нахождения) не определен.'
-    } else if (firstIndex !== 0 && lastIndex !== 0) {
-        for (let i = firstIndex; i < lastIndex; i++) {
-            let currentValue = 0;
+    });
+    if (firstIndex !== -1) {
+        let lastIndex = -1;
+        for (let i = firstIndex; i < array.length; i++) {
             switch (true) {
-                case array[i].includes('Почтовый индекс'):
-                    currentValue = createValue(i, lastIndex, 'индекс', array[i], array);
-                    adressArray.push(currentValue);
+                case array[i].includes('Сведения о регистрации'):
+                    lastIndex = i;
+                    i = array.length;
                     break;
-                case array[i].includes('Субъект Российской Федерации'):
-                    currentValue = createValue(i, lastIndex, 'Федерации', array[i], array);
-                    adressArray.push(currentValue);
-                    break;
-                case array[i].includes('т.п.'):
-                    currentValue = createValue(i, lastIndex, 'т.п.', array[i], array);
-                    adressArray.push(currentValue);
-                    break;
-                case array[i].includes('т.д.'):
-                    currentValue = createValue(i, lastIndex, 'т.д.', array[i], array);
-                    adressArray.push(currentValue);
+                case array[i].includes('о регистрирующем органе по месту'):
+                    i = array.length;
                     break;
             }
         }
-        let adress = adressArray.join(', ');
-        return adress;
+        if (lastIndex !== -1) {
+            for (let i = firstIndex; i < lastIndex; i++) {
+                let currentValue = 0;
+                switch (true) {
+                    case array[i].includes('Почтовый индекс'):
+                        currentValue = createValue(i, lastIndex, 'индекс', array[i], array);
+                        if (!(regexpDash.test(currentValue) && currentValue.length === 1)) {
+                            addressArray.push(currentValue);
+                        }
+                        break;
+                    case array[i].includes('Субъект Российской Федерации'):
+                        currentValue = createValue(i, lastIndex, 'Федерации', array[i], array);
+                        if (!(regexpDash.test(currentValue) && currentValue.length === 1)) {
+                            addressArray.push(currentValue);
+                        }
+                        break;
+                    case array[i].includes('т.п.'):
+                        currentValue = createValue(i, lastIndex, 'т.п.', array[i], array);
+                        if (!(regexpDash.test(currentValue) && currentValue.length === 1)) {
+                            addressArray.push(currentValue);
+                        }
+                        break;
+                    case array[i].includes('т.д.'):
+                        currentValue = createValue(i, lastIndex, 'т.д.', array[i], array);
+                        if (!(regexpDash.test(currentValue) && currentValue.length === 1)) {
+                            addressArray.push(currentValue);
+                        }
+                        break;
+                }
+            }
+            let address = addressArray.join(', ');
+            return address;
+        } else {
+            return 'Адрес (место нахождения) не определен.'
+        }
     } else {
         return 'Адрес (место нахождения) не определен.'
     }
@@ -762,64 +775,121 @@ const findBasicInformation = (array) => {
         if (element.includes('Наименование') && !element.includes('показателя') && !element.includes('полное')) {
             return index;
         }
-    }) || 0;
-    let lastIndex = 0;
-    for (let i = firstIndex; i < array.length; i++) {
-        switch (true) {
-            case array[i].includes('о регистрации в качестве страхователя в территориальном'):
-                lastIndex = i;
-                i = array.length;
-                break;
-            case array[i].includes('об уставном капитале'):
-                i = array.length;
-                break;
-        }
-    }
-
-    if (firstIndex === 0 || lastIndex === 0) {
-        return 'Основная информация о юридическом лице не определена.'
-    } else if (firstIndex !== 0 && lastIndex !== 0) {
-        for (let i = firstIndex; i < lastIndex; i++) {
-            let currentValue = 0;
+    });
+    if (firstIndex !== -1) {
+        let lastIndex = -1;
+        for (let i = firstIndex; i < array.length; i++) {
             switch (true) {
-                case array[i].includes('Полное наименование') && basicInformation['Полное наименование'] === 'Не определено':
-                    currentValue = createValue(i, lastIndex, 'наименование', array[i], array);
-                    basicInformation['Полное наименование'] = currentValue;
+                case array[i].includes('о регистрации в качестве страхователя в территориальном') || array[i].includes('о записях, внесенных в Единый государственный реестр'):
+                    lastIndex = i;
+                    i = array.length;
                     break;
-                case array[i].includes('Сокращенное наименование'):
-                    currentValue = createValue(i, lastIndex, 'наименование', array[i], array);
-                    basicInformation['Сокращенное наименование'] = currentValue;
-                    break;
-                case array[i].includes('ОГРН') && basicInformation['ОГРН'] === 'Не определен':
-                    if (!regexpColonAndPoint.test(array[i])) {
-                        currentValue = createValue(i, lastIndex, 'ОГРН', array[i], array);
-                        basicInformation['ОГРН'] = currentValue;
-                    }
-                    break;
-                case array[i].includes('ИНН') && basicInformation['ИНН'] === 'Не определен':
-                    currentValue = createValue(i, lastIndex, 'ИНН', array[i], array);
-                    basicInformation['ИНН'] = currentValue;
-                    break;
-                case array[i].includes('КПП'):
-                    currentValue = createValue(i, lastIndex, 'КПП', array[i], array);
-                    basicInformation['КПП'] = currentValue;
-                    break;
-                case array[i].includes('Дата регистрации'):
-                    if (array[i].includes('2002 года')) {
-                        currentValue = createValue(i, lastIndex, 'года', array[i], array);
-                    } else {
-                        currentValue = createValue(i, lastIndex, 'регистрации', array[i], array);
-                    }
-                    basicInformation['Дата регистрации'] = currentValue;
-                    break;
-                case basicInformation['Полное наименование'] !== 'Не определено' && basicInformation['Сокращенное наименование'] !== 'Не определено' && basicInformation['ОГРН'] !== 'Не определен' && basicInformation['ИНН'] !== 'Не определен' && basicInformation['КПП'] !== 'Не определен' && basicInformation['Дата регистрации'] !== 'Не определена':
-                    i = lastIndex;
+                case array[i].includes('о лице, имеющем право без доверенности'):
+                    i = array.length;
                     break;
             }
         }
-        return basicInformation;
+
+        if (lastIndex !== -1) {
+            for (let i = firstIndex; i < lastIndex; i++) {
+                let currentValue = 0;
+                switch (true) {
+                    case array[i].includes('Полное наименование') && basicInformation['Полное наименование'] === 'Не определено':
+                        currentValue = createValue(i, lastIndex, 'наименование', array[i], array);
+                        basicInformation['Полное наименование'] = currentValue;
+                        break;
+                    case array[i].includes('Сокращенное наименование'):
+                        currentValue = createValue(i, lastIndex, 'наименование', array[i], array);
+                        basicInformation['Сокращенное наименование'] = currentValue;
+                        break;
+                    case array[i].includes('ОГРН') && basicInformation['ОГРН'] === 'Не определен':
+                        if (!regexpColonAndPoint.test(array[i])) {
+                            currentValue = createValue(i, lastIndex, 'ОГРН', array[i], array);
+                            basicInformation['ОГРН'] = currentValue;
+                        }
+                        break;
+                    case array[i].includes('ИНН') && basicInformation['ИНН'] === 'Не определен':
+                        currentValue = createValue(i, lastIndex, 'ИНН', array[i], array);
+                        basicInformation['ИНН'] = currentValue;
+                        break;
+                    case array[i].includes('КПП'):
+                        currentValue = createValue(i, lastIndex, 'КПП', array[i], array);
+                        basicInformation['КПП'] = currentValue;
+                        break;
+                    case array[i].includes('Дата регистрации'):
+                        if (array[i].includes('2002 года')) {
+                            currentValue = createValue(i, lastIndex, 'года', array[i], array);
+                        } else {
+                            currentValue = createValue(i, lastIndex, 'регистрации', array[i], array);
+                        }
+                        basicInformation['Дата регистрации'] = currentValue;
+                        break;
+                    case basicInformation['Полное наименование'] !== 'Не определено' && basicInformation['Сокращенное наименование'] !== 'Не определено' && basicInformation['ОГРН'] !== 'Не определен' && basicInformation['ИНН'] !== 'Не определен' && basicInformation['КПП'] !== 'Не определен' && basicInformation['Дата регистрации'] !== 'Не определена':
+                        i = lastIndex;
+                        break;
+                }
+            }
+            return basicInformation;
+        } else {
+            return 'Основная информация о юридическом лице не определена.'
+        }
     } else {
         return 'Основная информация о юридическом лице не определена.'
+    }
+}
+
+const findTerminationRecord = (array) => {
+    let firstIndex = array.findIndex((element, index) => {
+        if (element.includes('Сведения о прекращении')) {
+            return index;
+        }
+    });
+    if (firstIndex !== -1) {
+        let lastIndex = -1;
+        for (let i = firstIndex; i < array.length; i++) {
+            switch (true) {
+                case array[i].includes('об учете в налоговом органе'):
+                    lastIndex = i;
+                    i = array.length;
+                    break;
+                case array[i].includes('о видах экономической деятельности'):
+                    i = array.length;
+                    break;
+            }
+        }
+        if (lastIndex !== -1) {
+            let terminationRecord = {
+                'Способ прекращения': 'Не определен',
+                'Дата прекращения': 'Не определена',
+                'ГРН': 'Не определен',
+            };
+            for (let i = firstIndex; i < lastIndex; i++) {
+                let currentValue = 0;
+                switch (true) {
+                    case array[i].includes('Способ прекращения'):
+                        currentValue = createValue(i, lastIndex, 'прекращения', array[i], array);
+                        terminationRecord['Способ прекращения'] = currentValue;
+                        break;
+                    case array[i].includes('Дата прекращения'):
+                        currentValue = createValue(i, lastIndex, 'прекращения', array[i], array);
+                        terminationRecord['Дата прекращения'] = currentValue;
+                        break;
+                    case array[i].includes('ГРН и дата внесения в ЕГРЮЛ'):
+                        let currentRegexp = /\d\d\d\d\d\d\d\d\d\d\d\d\d/;
+                        for (let j = i; j < lastIndex; j++) {
+                            if (currentRegexp.test(array[j])) {
+                                terminationRecord['ГРН'] = array[j];
+                            }
+                        }
+                        break;
+                }
+            }
+            return terminationRecord;
+        } else {
+            return 'Сведения о прекращении деятельности юридического лица не обнаружены.'
+        }
+    } else {
+        return 'Сведения о прекращении деятельности юридического лица не обнаружены.'
     }
 }
 
@@ -834,8 +904,9 @@ const chechTextHandler = () => {
     let statut = findStatut(newTextArray); // Актуальные записи об уставе
     let allStatutRecords = findAllChangeStatutRecordsHandler(newTextArray); // Общее количество записей об уставе
     let founders = findFounders(newTextArray);
-    let adress = makeAdress(newTextArray);
+    let adress = makeAddress(newTextArray);
     let basicInformation = findBasicInformation(newTextArray);
+    let terminationRecord = findTerminationRecord(newTextArray);
 
     // console.log(newTextArray);
     console.log(newValuesObject);
@@ -847,6 +918,7 @@ const chechTextHandler = () => {
     console.log(founders);
     console.log(adress);
     console.log(basicInformation);
+    console.log(terminationRecord);
 
 
 
