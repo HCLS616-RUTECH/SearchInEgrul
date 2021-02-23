@@ -9,278 +9,424 @@
 
 <body>
 	<header>
-		<!--====================================================================================================-->
+		<h1>Анализ данных в Выписке из Единого государственного реестра юридических лиц</h1>
 	</header>
 	<main>
-		<!-- <h1>Анализ Выписки из Единого государственного реестра юридических лиц</h1>
-		<div class="video">
-			<div>Видеоруководство</div>
-			<div>
-				<video></video>
-			</div>
-		</div> -->
-		<div>
-			<div>
-				<textarea name="txt" id="tXt" cols="30" rows="10"></textarea>
-			</div>
-			<div>
-				<button id="btn">НАЖАТЬ</button>
+		<div class="text-area">
+			<div class="text-area__inside">
+				<div>
+					<textarea name="txt" id="tXt" rows="15" placeholder="Вставьте текст"></textarea>
+				</div>
+				<div>
+					<button id="btn">АНАЛИЗ</button>
+				</div>
 			</div>
 		</div>
+		<fieldset class="link">
+			<legend class="link__legend">Заказать Выписку из ЕГРЮЛ с сайта ФНС:</legend>
+			<div class="link__block"><a class="link__a" href="https://egrul.nalog.ru/index.html"
+					target="_blank">https://egrul.nalog.ru/index.html</a></div>
+		</fieldset>
 		<!-- <div>
 			<input type="radio" name="animationRadio" id="animationOff" checked>
 			<input type="radio" name="animationRadio" id="animationOn">
 			<span>(анимация)</span>
-		</div>
-		<div class="grid-container">
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
 		</div> -->
+		<div class="buffer">
+			<input type="text" class="buffer__input" id="bufferText" />
+		</div>
 
+		<div class="backdrop-primary visually-hidden" id="backdropPrimary"></div>
+		<div class="backdrop-alert visually-hidden" id="backdropAlert"></div>
 
+		<div class="error-window visually-hidden" id="errorWindow" close-flag>
+			<div class="close-button-container">
+				<button class="close-button" id="closeErrorButton" close-button></button>
+			</div>
+			<div class="error-window__main-part">
+				<div class="error-window__text-error">Ошибка</div>
+				<div class="error-window__text-text">(переданы некорректные данные)</div>
+				<button class="close-button-ok" close-button>OK</button>
+			</div>
+		</div>
+		<div class="info-window visually-hidden" id="infoWindow" close-flag>
+			<button class="close-button close-button-info" id="closeInfoButton" close-button></button>
+			<div class="one-grid-container">
+				<div class="one-grid-container info" id="information">
+					<!-- Загаловок с ликвидацией и залогом -->
+					<div class="one-grid-container" id="pledgeAndLiquidationStrings" delete-flag></div>
+					<!-- Реквизиты выписки -->
+					<div class="header-extract copy" id="extract" copy-text-flag></div>
+					<!--====================================================================================================-->
+					<!-- Основная информация 1 -->
+					<div class="one-grid-container" container-flag>
+						<div class="header" roll-flag>Основные данные: <div class="arrow"></div>
+						</div>
+						<div class="grid-container-st" grid-flag>
+							<div class="grid-container-st__left subheader">Полное наименование:</div>
+							<div class="grid-container-st__right main-info copy" id="fullName" copy-text-flag></div>
+							<div class="grid-container-st__left subheader">Сокращенное наименование:</div>
+							<div class="grid-container-st__right main-info copy" id="shortName" copy-text-flag></div>
+							<div class="grid-container-st__left subheader">Вид уставного капитала:</div>
+							<div class="grid-container-st__right main-info copy" id="typeStatutCapital" copy-text-flag>
+							</div>
+							<div class="grid-container-st__left subheader">Размер уставного капитала:</div>
+							<div class="grid-container-st__right main-info copy" id="statutCapital" copy-text-flag>
+							</div>
+							<div class="grid-container-st__left subheader">ОГРН:</div>
+							<div class="grid-container-st__right main-info copy" id="ogrn" copy-text-flag></div>
+							<div class="grid-container-st__left subheader">ИНН:</div>
+							<div class="grid-container-st__right main-info copy" id="inn" copy-text-flag></div>
+							<div class="grid-container-st__left subheader">КПП:</div>
+							<div class="grid-container-st__right main-info copy" id="kpp" copy-text-flag></div>
+							<div class="grid-container-st__left subheader">Дата регистрации:</div>
+							<div class="grid-container-st__right main-info copy" id="regDate" copy-text-flag></div>
+							<div class="grid-container-st__left subheader">Адрес:</div>
+							<div class="grid-container-st__right main-info copy" id="address" copy-text-flag></div>
+						</div>
+					</div>
+					<!--====================================================================================================-->
+					<!-- Адрес -->
+					<div class="one-grid-container" id="addressStrings" delete-flag></div>
+					<!--====================================================================================================-->
+					<!-- Совпадения слов -->
+					<div class="one-grid-container" container-flag>
+						<div class="header" roll-flag>Количество совпадений по поиску слова: <div class="arrow"></div>
+						</div>
+						<div class="grid-container-st main-info-coincid" grid-flag>
+							<div class="grid-container-st__left">
+								<div>Недостоверность: <span id="falseData">0</span></div>
+								<div>Залог: <span id="pledge">0</span></div>
+								<div>Обременение: <span id="encumbrance">0</span></div>
+								<div>Ограничение: <span id="limitation">0</span></div>
+								<div>Запрещение: <span id="prohibition">0</span></div>
+								<div>Арест: <span id="arrest">0</span></div>
+							</div>
+							<div class="grid-container-st__right-spec">
+								<div>Ликвидация: <span id="liquidationValue">0</span></div>
+								<div>Исключение: <span id="delition">0</span></div>
+								<div>Прекращение: <span id="terminationValue">0</span></div>
+								<div>Устав: <span id="statutValue">0</span></div>
+								<div>Банкротство: <span id="bankruptcy">0</span></div>
+								<div>Доверительное управление: <span id="attorneyManagment">0</span></div>
+							</div>
+						</div>
+					</div>
+					<!--====================================================================================================-->
+					<div class="one-grid-container" delete-flag container-flag>
+						<div class="header" not-delete-flag roll-flag>Списки строк с совпадениями по слову:
+							<div class="arrow"></div>
+						</div>
+						<div id="listsStrings" delete-flag>
 
+						</div>
+					</div>
+					<!--====================================================================================================-->
+					<div class="one-grid-container" delete-flag container-flag>
+						<div class="header" not-delete-flag to-change-flag roll-flag>Руководитель(и) юридического лица,
+							действующий без доверенности: <span class="weight-text">0</span>
+							<div class="arrow"></div>
+						</div>
+						<div id="directorStrings" delete-flag>
 
+						</div>
+					</div>
+					<!--====================================================================================================-->
+					<div class="one-grid-container" delete-flag container-flag>
+						<div class="header" not-delete-flag to-change-flag roll-flag>Участники (учредители): <span
+								class="weight-text">0</span>
+							<div class="arrow"></div>
+						</div>
+						<div id="foundersStrings" delete-flag>
 
-		<!-- <div class="final-window">
-			<div class="final-window__table" id="finalTable">
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">ОБРЕМЕНЕНИЕ НЕ ОБНАРУЖЕНО</li>
-					<li class="final-window__table-column">РАЗДЕЛ О ПРЕКРАЩЕНИИ ДЕЯТЕЛЬНОСТИ НЕ ОБНАРУЖЕН</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Выписка из Единого государственного реестра юридических лиц
-						14.08.2020 № ЮЭ9965-20-152072235</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Полное наименование</li>
-					<li class="final-window__table-column">Сокращенное наименование</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ «СТУДИЯ ПРОЕКТ
-						ДИЗАЙН»</li>
-					<li class="final-window__table-column">ООО «СПД»</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">ОГРН</li>
-					<li class="final-window__table-column">ИНН</li>
-					<li class="final-window__table-column">КПП</li>
-					<li class="final-window__table-column">Дата регистрации</li>
-					<li class="final-window__table-column">Размер уставного капитала</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">1179102012649</li>
-					<li class="final-window__table-column">9102229117</li>
-					<li class="final-window__table-column">910201001</li>
-					<li class="final-window__table-column">16.05.2017</li>
-					<li class="final-window__table-column">10000</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">АДРЕС</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">295034, РЕСПУБЛИКА КРЫМ, ГОРОД СИМФЕРОПОЛЬ, ПРОСПЕКТ ПОБЕДЫ,
-						ДОМ 28А, ЭТАЖ 2, ПОМЕЩЕНИЕ 211</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">ПОИСК ПО СЛОВУ</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">
-						<ul>
-							<li>Устав: <span>7</span></li>
-							<li>Недостоверность: <span>1</span></li>
-							<li>Банкротство: <span>0</span></li>
-							<li>Прекращение: <span>0</span></li>
-							<li>Исключение: <span>0</span></li>
-							<li>Ликвидация: <span>0</span></li>
-						</ul>
+						</div>
+					</div>
+					<div class="one-grid-container" id="stockRegisterStrings" delete-flag container-flag>
 
-					</li>
-					<li class="final-window__table-column">
-						<ul>
-							<li>Арест: <span>0</span></li>
-							<li>Ограничение: <span>0</span></li>
-							<li>Обременение: <span>0</span></li>
-							<li>Запрещение: <span>0</span></li>
-							<li>Залог: <span>0</span></li>
-							<li>Доверетельное управление: <span>0</span></li>
-						</ul>
-					</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Последняя вресия устава</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Наименование документа</li>
-					<li class="final-window__table-column">Регистрирующий орган</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">УСТАВ ЮЛ</li>
-					<li class="final-window__table-column">Межрайонная инспекция Федеральной налоговой службы № 9 по
-						Республике Крым</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">ГРН документа:</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">2199112222351</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Дата документа:</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">24.07.2019</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Развернуть все найденные строки с упоминанием слова: "Устав"
-					</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">
-						<ul>
-							<li>260 Наименование документа УСТАВ ЮЛ</li>
-							<li>321 Наименование документа УСТАВ ЮЛ</li>
-							<li>340 Наименование документа УСТАВ ЮЛ</li>
-							<li>359 Наименование документа УСТАВ ЮЛ</li>
-						</ul>
-					</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Руководство юридического лица</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Тип</li>
-					<li class="final-window__table-column">Должность</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Единоличный исполнительный орган</li>
-					<li class="final-window__table-column">Генеральный директор</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">ИНН Руководителя</li>
-					<li class="final-window__table-column">ФИО Руководителя</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">772855371240</li>
-					<li class="final-window__table-column">Шишкина Татьяна Валерьевна</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Руководство юридического лица</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Тип:</li>
-					<li class="final-window__table-column">Полное наименование:</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Управляющая организация</li>
-					<li class="final-window__table-column">ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "МЕЖРЕГИОНФЛОТ"</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">ОГРН Управляющей организации</li>
-					<li class="final-window__table-column">ИНН Управляющей организации</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">1057200940301</li>
-					<li class="final-window__table-column">7202142900</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Участник (учредитель):</li>
-					<li class="final-window__table-column">ФИО участника (учредителя):</li>
-					<li class="final-window__table-column">ИНН участника (учредителя):</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Физическое лицо</li>
-					<li class="final-window__table-column">Дорошенко Николай Николаевич</li>
-					<li class="final-window__table-column">503201272941</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Размер доли:</li>
-					<li class="final-window__table-column">Номинальная стоимость доли:</li>
-					<li class="final-window__table-column">Вид обременения:</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Не определен</li>
-					<li class="final-window__table-column">7500</li>
-					<li class="final-window__table-column">Не определен</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Участник (учредитель):</li>
-					<li class="final-window__table-column">Полное наименование:</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Юридическое лицо</li>
-					<li class="final-window__table-column">ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "ГАРАНТ"</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">ОГРН:</li>
-					<li class="final-window__table-column">ИНН:</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">1157746519974</li>
-					<li class="final-window__table-column">7751006190</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Размер доли:</li>
-					<li class="final-window__table-column">Номинальная стоимость доли:</li>
-					<li class="final-window__table-column">Вид обременения:</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Не определен</li>
-					<li class="final-window__table-column">7500</li>
-					<li class="final-window__table-column">Не определен</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Участник (учредитель):</li>
-					<li class="final-window__table-column">Полное наименование:</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Иностранное юридическое лицо</li>
-					<li class="final-window__table-column">КОМПАНИЯ С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ СЕФАСТ ТРЕЙДИНГ
-						ЛИМИТЕД</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Дата регистрации:</li>
-					<li class="final-window__table-column">Регистрационный номер:</li>
-					<li class="final-window__table-column">Страна происхождения:</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">03.02.2007</li>
-					<li class="final-window__table-column">191179</li>
-					<li class="final-window__table-column">КИПР</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Адрес (место нахождения) в стране происхождения:</li>
-					<li class="final-window__table-column">Наименование регистрирующего органа:</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">УЛ. ИДЖИПТ, 12, 1097, НИКОСИЯ, КИПР</li>
-					<li class="final-window__table-column">МИНИСТЕРСТВО ТОРГОВЛИ, ПРОМЫШЛЕННОСТИ И ТУРИЗМА ОТДЕЛ
-						РЕГИСТРАТОРА КОМПАНИЙ И ОФИЦИАЛЬНОГО ПРИЕМЩИКА НИКОСИЯ</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Размер доли:</li>
-					<li class="final-window__table-column">Номинальная стоимость доли:</li>
-					<li class="final-window__table-column">Вид обременения:</li>
-				</ul>
-				<ul class="final-window__table-rows">
-					<li class="final-window__table-column">Не определен</li>
-					<li class="final-window__table-column">7500</li>
-					<li class="final-window__table-column">Не определен</li>
-				</ul>
-			</div> -->
+					</div>
+					<div class="one-grid-container" delete-flag container-flag>
+						<div class="header" not-delete-flag to-change-flag roll-flag>Устав: <span
+								class="weight-text">0</span>
+							<div class="arrow"></div>
+						</div>
+						<div id="statutStrings" delete-flag>
 
+						</div>
+					</div>
+					<div class="one-grid-container" id="terminationRecordStrings" delete-flag container-flag>
 
-		<!-- </div> -->
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="snackbar" id="snackbar">
+			<div>Текст скопирован</div>
+		</div>
+
+		<!-- <button class="close-button spec-btn-snack"><svg viewBox="0 0 15 15"
+			style="width: 15px; height: 15px; display: inline-block; user-select: none; fill: #262626;">
+			<path
+				d="M0 15V0v15zM15 0v15V0zM8.349 7.5l5.222 5.222c.195.195.195.512 0 .707l-.142.142c-.195.195-.512.195-.707 0L7.5 8.349l-5.222 5.222c-.195.195-.512.195-.707 0l-.142-.142c-.195-.195-.195-.512 0-.707L6.651 7.5 1.429 2.278c-.195-.195-.195-.512 0-.707l.142-.142c.195-.195.512-.195.707 0L7.5 6.651l5.222-5.222c.195-.195.512-.195.707 0l.142.142c.195.195.195.512 0 .707L8.349 7.5z"
+				fill-rule="evenodd"></path>
+		</svg></button> -->
+		<div>
+			<!-- Залог/Исключение -->
+			<template id="pledgeAndLiquidation">
+				<div class="alert-info" data-title="залог">ОБНАРУЖЕНО ОБРЕМЕНЕНИЕ</div>
+				<div class="alert-info" data-title="ликвид">ОБНАРУЖЕНЫ СВЕДЕНИЯ О ПРЕКРАЩЕНИИ ДЕЯТЕЛЬНОСТИ</div>
+			</template>
+			<!-- Недостоверность -->
+			<template id="templateFalseData">
+				<div class="grid-container-st__single main-info-alert copy" data-title="Недостоверность" copy-text-flag>
+				</div>
+			</template>
+			<!-- Списки с совпадениями по слову -->
+			<template id="coincidenceLists">
+				<div class="grid-container-st" data-title="недост">
+					<div class="grid-container-st__left subheader">Недостоверность: <span></span></div>
+					<div class="grid-container-st__right main-info-coincid"></div>
+				</div>
+				<div class="grid-container-st" data-title="залог">
+					<div class="grid-container-st__left subheader">Залог: <span></span></div>
+					<div class="grid-container-st__right main-info-coincid"></div>
+				</div>
+				<div class="grid-container-st" data-title="обрем">
+					<div class="grid-container-st__left subheader">Обременение: <span></span></div>
+					<div class="grid-container-st__right main-info-coincid"></div>
+				</div>
+				<div class="grid-container-st" data-title="огранич">
+					<div class="grid-container-st__left subheader">Ограничение: <span></span></div>
+					<div class="grid-container-st__right main-info-coincid"></div>
+				</div>
+				<div class="grid-container-st" data-title="запрещ">
+					<div class="grid-container-st__left subheader">Запрещение: <span></span></div>
+					<div class="grid-container-st__right main-info-coincid"></div>
+				</div>
+				<div class="grid-container-st" data-title="арест">
+					<div class="grid-container-st__left subheader">Арест: <span></span></div>
+					<div class="grid-container-st__right main-info-coincid"></div>
+				</div>
+				<div class="grid-container-st" data-title="ликвид">
+					<div class="grid-container-st__left subheader">Ликвидация: <span></span></div>
+					<div class="grid-container-st__right main-info-coincid"></div>
+				</div>
+				<div class="grid-container-st" data-title="исключ">
+					<div class="grid-container-st__left subheader">Исключение: <span></span></div>
+					<div class="grid-container-st__right main-info-coincid"></div>
+				</div>
+				<div class="grid-container-st" data-title="прекр">
+					<div class="grid-container-st__left subheader">Прекращение: <span></span></div>
+					<div class="grid-container-st__right main-info-coincid"></div>
+				</div>
+				<div class="grid-container-st" data-title="устав">
+					<div class="grid-container-st__left subheader">Устав: <span></span></div>
+					<div class="grid-container-st__right main-info-coincid"></div>
+				</div>
+				<div class="grid-container-st" data-title="банкр">
+					<div class="grid-container-st__left subheader">Банкротство: <span></span></div>
+					<div class="grid-container-st__right main-info-coincid"></div>
+				</div>
+				<div class="grid-container-st" data-title="доверит">
+					<div class="grid-container-st__left subheader">Доверительное управление: <span></span></div>
+					<div class="grid-container-st__right main-info-coincid"></div>
+				</div>
+				<div class="ppp copy" data-title="Строка" copy-text-flag></div>
+				<div class="attention" data-title="Внимание">
+					<div class="attention__symbol"></div>
+					<div class="attention__text-container">
+						<div class="attention__text-block">
+							<div>Количество строк не совпадает с количеством найденных слов. Как правило это связано с
+								тем, что одна строка может содержать сразу несколько найденных значений.</div>
+						</div>
+					</div>
+				</div>
+			</template>
+			<!-- Руководители -->
+			<template id="director">
+				<div class="main-info-alert" data-title="Неопределены">Руководитель юридического лица, действующий
+					без доверенности не определен.</div>
+				<div class="grid-container-st ppp" data-title="Единоличный исполнительный орган">
+					<div class="grid-container-st__left subheader">Тип руководителя:</div>
+					<div class="grid-container-st__right main-info copy" copy-text-flag>Единоличный исполнительный орган
+					</div>
+					<div class="grid-container-st__left subheader">Должность</div>
+					<div class="grid-container-st__right main-info copy" data-title="Должность" copy-text-flag></div>
+					<div class="grid-container-st__left subheader">Фамилия, Имя, Отчество</div>
+					<div class="grid-container-st__right main-info copy" data-title="ФИО" copy-text-flag></div>
+					<div class="grid-container-st__left subheader">ИНН</div>
+					<div class="grid-container-st__right main-info copy" data-title="ИНН" copy-text-flag></div>
+				</div>
+				<div class="grid-container-st ppp" data-title="Управляющая организация">
+					<div class="grid-container-st__left subheader">Тип руководителя:</div>
+					<div class="grid-container-st__right main-info copy" copy-text-flag>Управляющая организация</div>
+					<div class="grid-container-st__left subheader">Полное наименование</div>
+					<div class="grid-container-st__right main-info copy" data-title="Полное наименование"
+						copy-text-flag></div>
+					<div class="grid-container-st__left subheader">ОГРН</div>
+					<div class="grid-container-st__right main-info copy" data-title="ОГРН" copy-text-flag></div>
+					<div class="grid-container-st__left subheader">ИНН</div>
+					<div class="grid-container-st__right main-info copy" data-title="ИНН" copy-text-flag></div>
+				</div>
+				<div class="grid-container-st__single header-two" data-title="Подзаголовок"></div>
+			</template>
+			<!-- Участники -->
+			<template id="founders">
+				<div class="main-info-alert" data-title="Неопределены">Участники (учредители) не определены.</div>
+				<div class="grid-container-st ppp" data-title="Физическое лицо">
+					<div class="grid-container-st__left subheader">Участник (учредитель):</div>
+					<div class="grid-container-st__right main-info copy">Физическое лицо</div>
+					<div class="grid-container-st__left subheader">Фамилия, имя, отчество:</div>
+					<div class="grid-container-st__right main-info copy" data-title="ФИО" copy-text-flag></div>
+					<div class="grid-container-st__left subheader">ИНН:</div>
+					<div class="grid-container-st__right main-info copy" data-title="ИНН" copy-text-flag></div>
+					<div class="grid-container-st__left subheader">Размер доли:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Размер доли" copy-text-flag></div>
+					<div class="grid-container-st__left subheader">Номинальная стоимость доли:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Номинальная стоимость доли"
+						copy-text-flag></div>
+				</div>
+				<div class="grid-container-st ppp" data-title="Юридическое лицо">
+					<div class="grid-container-st__left subheader">Участник (учредитель):</div>
+					<div class="grid-container-st__right main-info copy">Юридическое лицо</div>
+					<div class="grid-container-st__left subheader">Полное наименование:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Полное наименование"
+						copy-text-flag></div>
+					<div class="grid-container-st__left subheader">ОГРН:</div>
+					<div class="grid-container-st__right main-info copy" data-title="ОГРН" copy-text-flag></div>
+					<div class="grid-container-st__left subheader">ИНН:</div>
+					<div class="grid-container-st__right main-info copy" data-title="ИНН" copy-text-flag></div>
+					<div class="grid-container-st__left subheader">Размер доли:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Размер доли" copy-text-flag></div>
+					<div class="grid-container-st__left subheader">Номинальная стоимость доли:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Номинальная стоимость доли"
+						copy-text-flag></div>
+				</div>
+				<div class="grid-container-st ppp" data-title="Иностранное юридическое лицо">
+					<div class="grid-container-st__left subheader">Участник (учредитель):</div>
+					<div class="grid-container-st__right main-info copy">Иностранное юридическое лицо</div>
+					<div class="grid-container-st__left subheader">Полное наименование:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Полное наименование"
+						copy-text-flag></div>
+					<div class="grid-container-st__left subheader">Страна происхождения:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Страна происхождения"
+						copy-text-flag></div>
+					<div class="grid-container-st__left subheader">Дата регистрации:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Дата регистрации" copy-text-flag>
+					</div>
+					<div class="grid-container-st__left subheader">Регистрационный номер:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Регистрационный номер"
+						copy-text-flag></div>
+					<div class="grid-container-st__left subheader">Наименование регистрирующего органа:</div>
+					<div class="grid-container-st__right main-info copy"
+						data-title="Наименование регистрирующего органа" copy-text-flag></div>
+					<div class="grid-container-st__left subheader">Размер доли:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Размер доли" copy-text-flag></div>
+					<div class="grid-container-st__left subheader">Номинальная стоимость доли:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Номинальная стоимость доли"
+						copy-text-flag></div>
+					<div class="grid-container-st__left subheader">Адрес (место нахождения) в стране
+						происхождения:</div>
+					<div class="grid-container-st__right main-info copy"
+						data-title="Адрес (место нахождения) в стране происхождения" copy-text-flag></div>
+				</div>
+				<div class="grid-container-st ppp" data-title="Доля общества">
+					<div class="grid-container-st__single header-two-alert">Доля, принадлежащая обществу:</div>
+					<div class="grid-container-st__left subheader">Размер доли:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Размер доли" copy-text-flag></div>
+					<div class="grid-container-st__left subheader">Номинальная стоимость доли:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Номинальная стоимость доли"
+						copy-text-flag></div>
+				</div>
+				<div class="grid-container-st__single header-two" data-title="Подзаголовок"></div>
+			</template>
+			<template id="stockRegister">
+				<div class="main-info-alert" data-title="Неопределены">Держатель реестра акционеров не определен.
+				</div>
+				<div class="grid-container-st" data-title="Держатель акций" grid-flag>
+					<div class="grid-container-st__left subheader">Полное наименование:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Полное наименование"
+						copy-text-flag></div>
+					<div class="grid-container-st__left subheader">ОГРН</div>
+					<div class="grid-container-st__right main-info copy" data-title="ОГРН" copy-text-flag></div>
+					<div class="grid-container-st__left subheader">ИНН</div>
+					<div class="grid-container-st__right main-info copy" data-title="ИНН" copy-text-flag></div>
+				</div>
+				<div class="grid-container-st__single header" data-title="Заголовок" roll-flag>Держатель реестра
+					акционеров акционерного общества <div class="arrow"></div>
+				</div>
+			</template>
+			<template id="statut">
+				<div class="main-info-alert" data-title="Неопределены">Сведения об уставе не обнаружены.</div>
+				<div class="grid-container-st" data-title="Устав" grid-flag>
+					<div class="grid-container-st__left subheader">Наименование документа:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Наименование документа"
+						copy-text-flag></div>
+					<div class="grid-container-st__left subheader">ГРН документа:</div>
+					<div class="grid-container-st__right main-info copy" data-title="ГРН документа" copy-text-flag>
+					</div>
+					<div class="grid-container-st__left subheader">Дата документа:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Дата документа" copy-text-flag>
+					</div>
+					<div class="grid-container-st__left subheader">Регистрирующий орган:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Регистрирующий орган"
+						copy-text-flag></div>
+				</div>
+				<div class="grid-container-st__single header-two" data-title="Подзаголовок"></div>
+			</template>
+			<template id="terminationRecord">
+				<div class="main-info-alert" data-title="Неопределены">Сведения о прекращении деятельности
+					юридического лица не обнаружены.</div>
+				<div class="grid-container-st" data-title="В процессе ликвидации" grid-flag>
+					<div class="grid-container-st__left subheader">Статус:</div>
+					<div class="grid-container-st__right main-info copy" copy-text-flag>В процессе ликвидации.</div>
+					<div class="grid-container-st__left subheader">Номер и дата решения:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Номер и дата решения"
+						copy-text-flag></div>
+					<div class="grid-container-st__left subheader">ГРН:</div>
+					<div class="grid-container-st__right main-info copy" data-title="ГРН" copy-text-flag></div>
+					<div class="grid-container-st__left subheader">Состояние:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Состояние" copy-text-flag></div>
+					<div class="grid-container-st__left subheader">Сведения о публикации:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Сведения о публикации"
+						copy-text-flag></div>
+				</div>
+				<div class="grid-container-st" data-title="Ликвидировано" grid-flag>
+					<div class="grid-container-st__left subheader">Статус:</div>
+					<div class="grid-container-st__right main-info copy" copy-text-flag>Ликвидировано.</div>
+					<div class="grid-container-st__left subheader">Дата прекращения:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Дата прекращения" copy-text-flag>
+					</div>
+					<div class="grid-container-st__left subheader">ГРН:</div>
+					<div class="grid-container-st__right main-info copy" data-title="ГРН" copy-text-flag></div>
+					<div class="grid-container-st__left subheader">Способ прекращения:</div>
+					<div class="grid-container-st__right main-info copy" data-title="Способ прекращения" copy-text-flag>
+					</div>
+				</div>
+				<div class="grid-container-st__single header-alert" data-title="Заголовок" roll-flag>Сведения о
+					прекращении деятельности <div class="arrow-alert"></div>
+				</div>
+			</template>
+		</div>
 	</main>
 	<footer>
 		<!--====================================================================================================-->
 	</footer>
-
-	<script src="js/script.js"></script>
+	<!-- Константы -->
+	<script src="js/constants.js"></script>
+	<!-- Скрипты для поиска информации в тексте -->
+	<script src="js/searchScripts/supportFunctions.js"></script>
+	<script src="js/searchScripts/basicInfo.js"></script>
+	<script src="js/searchScripts/otherFunctions.js"></script>
+	<script src="js/searchScripts/statut.js"></script>
+	<script src="js/searchScripts/director.js"></script>
+	<script src="js/searchScripts/founders.js"></script>
+	<script src="js/searchScripts/termination.js"></script>
+	<!-- Скрипты для вывода найденной информации -->
+	<script src="js/visualScripts/staticInfo.js"></script>
+	<script src="js/visualScripts/notStaticInfo.js"></script>
+	<script src="js/visualScripts/otherFunctions.js"></script>
+	<!-- Цнтральный скрипт -->
+	<script src="js/main.js"></script>
 </body>
 
 </html>
