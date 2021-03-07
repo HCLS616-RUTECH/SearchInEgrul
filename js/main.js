@@ -70,11 +70,21 @@ const showInformationHandler = () => {
         }
     }
 }
+
+const showDemonstration = () => {
+    if (elementsMap.demonstrationWindow.classList.contains('visually-hidden')) {
+        elementsMap.demonstrationWindow.classList.remove('visually-hidden');
+        elementsMap.backdropPrimary.classList.remove('visually-hidden');
+    }
+}
+
 // Основные обработчики событий
 elementsMap.startButton.addEventListener('click', checkTextHandler);
 elementsMap.startButton.addEventListener('click', showInformationHandler);
 // Второстепенные обработчики событий
+elementsMap.demonstrationButton.addEventListener('click', showDemonstration);
 elementsMap.bufferText.addEventListener('focus', copyBuferText);
+elementsMap.demonstrationWindow.addEventListener('click', showAnotherDemonstration);
 document.addEventListener('click', copyText);
 document.addEventListener('click', toRollText);
 document.addEventListener('click', closeWindowsHandler);

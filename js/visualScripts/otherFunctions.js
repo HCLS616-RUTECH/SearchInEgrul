@@ -24,10 +24,14 @@ const closeWindowsHandler = (evt) => {
                 elementsMap.backdropPrimary.classList.add('visually-hidden');
             }
             break;
-        case !(evt.target.hasAttribute('close-flag') || evt.target.closest('div[close-flag]')) && evt.target.getAttribute('id') !== 'btn':
+        case !(evt.target.hasAttribute('close-flag') || evt.target.closest('div[close-flag]')) && evt.target.getAttribute('id') !== 'btn' && evt.target.getAttribute('id') !== 'btnDemonstration':
             switch (true) {
                 case !elementsMap.errorWindow.classList.contains('visually-hidden'):
                     elementsMap.errorWindow.classList.add('visually-hidden');
+                    elementsMap.backdropPrimary.classList.add('visually-hidden');
+                    break;
+                case !elementsMap.demonstrationWindow.classList.contains('visually-hidden'):
+                    elementsMap.demonstrationWindow.classList.add('visually-hidden');
                     elementsMap.backdropPrimary.classList.add('visually-hidden');
                     break;
                 case !elementsMap.infoWindow.classList.contains('visually-hidden'):
@@ -88,7 +92,7 @@ const toRollText = (evt) => {
             case evt.target.classList.contains('arrow') || evt.target.classList.contains('arrow-alert'):
                 arrow = evt.target;
                 break;
-            case evt.target.classList.contains('weight-text'):
+            case evt.target.hasAttribute('roll-span'):
                 arrow = evt.target.closest('div[roll-flag]').querySelector('.arrow') || evt.target.closest('div[roll-flag]').querySelector('.arrow-alert');
                 break;
         }
@@ -123,4 +127,57 @@ const toRollText = (evt) => {
                 break;
         }
     }
+}
+
+// Функции для пролистывания изображений
+// Функция для номера текущего изображения
+const findImageCount = (src) => {
+    let currentRegexp = /\d/g;
+    let imageCount = src.split('');
+    for (let i = imageCount.length - 1; i >= 0; i--) {
+        if (imageCount[i] === '/') {
+            imageCount = imageCount.slice(i, imageCount.length);
+            i = 0;
+        }
+    }
+    imageCount = +imageCount.join('').match(currentRegexp).join('');
+    return imageCount;
+}
+// Функция для номера последнего изображения
+const findNumberOfLastImage = () => {
+    let lastNumber = 1;
+    for (let key in demonstration) {
+        switch (true) {
+            case lastNumber === 1 && +key > 1:
+                lastNumber = +key;
+                break;
+            case lastNumber !== 1 && +key > lastNumber:
+                lastNumber = +key;
+                break;
+        }
+    }
+    return lastNumber;
+}
+
+// Основная функция для пролистывания изображений
+const showAnotherDemonstration = (evt) => {
+    let imageCount = findImageCount(elementsMap.image.src);
+    let lastImageNumber = findNumberOfLastImage();
+    switch (true) {
+        case imageCount === 1 && evt.target.hasAttribute('left-swipe-flag'):
+            imageCount = lastImageNumber;
+            break;
+        case imageCount !== 1 && evt.target.hasAttribute('left-swipe-flag'):
+            imageCount--;
+            break;
+        case imageCount === lastImageNumber && evt.target.hasAttribute('right-swipe-flag'):
+            imageCount = 1;
+            break;
+        case imageCount !== lastImageNumber && evt.target.hasAttribute('right-swipe-flag'):
+            imageCount++;
+            break;
+    }
+    elementsMap.image.src = `img/demonstration/${imageCount}.jpg`;
+    elementsMap.image.alt = demonstration[imageCount].alt;
+    elementsMap.textBlock.textContent = demonstration[imageCount].text;
 }

@@ -1,0 +1,566 @@
+@font-face {
+    font-family: 'Roboto Medium';
+    src: url('../fonts/Roboto-Medium.ttf') format('ttf'),
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Regular.ttf') format('ttf'),
+}
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Bold.ttf') format('ttf'),
+}
+@font-face {
+    font-family: 'Roboto Black';
+    src: url('../fonts/Roboto-Black.ttf') format('ttf'),
+}
+@font-face {
+    font-family: 'Roboto Black';
+    src: url('../fonts/Roboto-BlackItalic.ttf') format('ttf'),
+}
+
+// Шаблоны
+@import "variables.less";
+
+*, *:after, *:before {
+    box-sizing: inherit;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+}
+body {
+    color: @main-color__main-fonts;
+}
+header {
+    width: 100%;
+    max-height: 20%;
+    background-color: @main-color__header;
+    text-align: center;
+}
+h1 {
+    max-width: 60%;
+    margin: 0 auto;
+    padding: 1.5%;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+}
+main {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+// Скрытый блок
+.visually-hidden {
+    display: none;
+}
+// Поле ввода
+.text-area {
+    margin: 1% auto 0;
+    width: 40%;
+    color: @main-color__main-fonts;
+    border: 1px solid @main-color__border;
+    &__inside {
+        margin: 0 auto;
+        width: 80%;
+    }
+    &__inside-textarea {
+        margin: 3% auto 0;
+        padding: 3%;
+        font-size: 14px;
+        width: 100%;
+        border: none;
+        outline: none;
+        &:focus {
+            outline: 1px solid @main-color__primary-button;
+        }
+    }
+    &__button {
+        margin: 2% auto 4%;
+        width: 100%;
+        height: 35px;
+        background-color: @main-color__primary-button;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 13px;
+        color: @main-color__secondary-fonts;
+        transition: all 0.2s ease;
+        &:hover {
+            background-color: darken(@main-color__primary-button, 10%);
+        }
+    }
+}
+// Блок с ссылкой
+.link {
+    .main-page-standart-block();
+    &__legend {
+        margin-left: 13%;
+        color: @main-color__main-fonts;
+    }
+    &__block {
+        margin-top: 2%;
+        margin-bottom: 3%;
+        margin-left: 13%;
+        font-size: 16px;
+    }
+    &__a {
+        color: @main-color__primary-button;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+// Блок с демонстрацией
+.demonstration {
+    .main-page-standart-block();
+    &__button-block {
+        margin: 0 auto;
+        width: 80%;
+    }
+    &__button {
+        margin: 3% auto;
+        width: 100%;
+        height: 35px;
+        background-color: @main-color__primary-button;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 13px;
+        color: @main-color__secondary-fonts;
+        transition: all 0.2s ease;
+        &:hover {
+            background-color: darken(@main-color__primary-button, 10%);
+        }
+    }
+}
+// Переходный буфер для копирования текста
+.buffer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    opacity: 0;
+    &:hover {
+        display: none;
+    }
+    &__input {
+        cursor: default;
+        max-width: 150px;
+        &:hover {
+            cursor: default;
+            display: none;
+        }
+    }
+}
+// Фон при открытии окон
+.backdrop-primary {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: @main-color__backdrop-primary;
+}
+
+// Кнопка закрытия
+.close-button {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 1%; 
+    right: 1%;
+    background-color: inherit;
+    background-image: url("../img/4115230-cancel-close-cross-delete_114048.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    &:hover {
+        background-image: url("../img/4115230-cancel-close-cross-delete_114048_2.svg");
+    }
+    &-info {
+        top: 3.7%;
+    }
+}
+// Сигнал, в случае когда кол-во слов не совпадает с количеством строк
+.attention {
+    position: absolute;
+    display: inline-block;
+    margin-top: -10px;
+    width: 250px;
+    min-height: 90px;
+    font-size: 12px;
+    text-align: left;
+    pointer-events: none;
+    &__text-container {
+        position: absolute;
+        display: none;
+        width: inherit;
+        background-color: @main-color__secondary-fonts;
+        box-shadow: 0 0 5px @main-color__main-fonts;
+    }
+    &__text-block {
+        width: 230px;
+        padding: 10px;
+        margin-left: auto;
+    }
+    &__symbol {
+        position: absolute;
+        margin-top: 10px;
+        margin-left: 5px;
+        width: 16px;
+        height: 16px;
+        background-image: url("../img/3643776-caution-exclamation-mark-round-sign_113410.svg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        cursor: pointer;
+        border-radius: 50%;
+        z-index: 999;
+        pointer-events: auto;
+        &:hover + .attention__text-container {
+            display: block;
+        }
+    }
+}
+// Стрелки
+.arrow {
+    background-image: url("../img/down_icon-icons.com_61209.svg");
+    .arrow-tepmlate();
+}
+.arrow-alert {
+    background-image: url("../img/down_icon-icons.com_61209_red.svg");
+    .arrow-tepmlate();
+}
+.arrow-rotate {
+    .arrow-rotate-tepmlate();
+    background-image: url("../img/down_icon-icons.com_61209_2.svg");
+}
+.arrow-rotate-alert {
+    .arrow-rotate-tepmlate();
+    background-image: url("../img/down_icon-icons.com_61209_red_2.svg");
+}
+// Снэк и анимация к нему
+.snackbar {
+    visibility: hidden;
+    width: 12%;
+    height: 5%;
+    position: fixed;
+    right: 1%;
+    bottom: 2%;
+    background-color: transparent;
+    border: 1px solid @main-color__secondary-fonts;
+    color: @main-color__secondary-fonts;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: default;
+    pointer-events: none;
+}
+.show {
+    visibility: visible;
+    animation: fadein 0.3s, fadeout 0.3s 1s;
+}
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 2%; opacity: 1;}
+}
+@keyframes fadeout {
+    from {bottom: 2%; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+// Окно с ошибкой
+.error-window {
+    margin: 10% auto;
+    position: absolute;
+    top: 0; 
+    left: 0; 
+    bottom: 0; 
+    right: 0;
+    width: 310px;
+    height: 160px;
+    border: none;
+    background-color: @main-color__secondary-fonts;
+    &__main-part {
+        box-sizing: border-box;
+        width: 80%;
+        height: 90%;
+        margin: auto;
+        text-align: left;
+    }
+    &__text-error {
+        padding-top: 10%;
+        font-size: 24px;
+        font-weight: 500;
+    }
+    &__text-text {
+        padding-top: 5%;
+        font-size: 13px;
+    }
+    &__button-ok {
+        width: 100%;
+        height: 35px;
+        margin-top: 10%;
+        background-color: @main-color__primary-button;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 13px;
+        color: @main-color__secondary-fonts;
+        transition: all 0.2s ease;
+        &:hover {
+            background-color: darken(@main-color__primary-button, 10%);
+        }
+    }
+}
+// Окно с демонстрацией работы
+.demonstration-window {
+    max-width: 90%;
+    max-height: 95%;
+    margin: auto;
+    position: absolute;
+    top: 0; 
+    left: 0; 
+    bottom: 0; 
+    right: 0;
+    background-color: @main-color__secondary-fonts;
+    &__inside-block {
+        width: 95%;
+        height: 95%;
+        margin-top: 1%;
+        margin-left: 1%;
+    }
+    &__image-block {
+        background-color: @main-color__header;
+        border-top: 1px solid @main-color__main-fonts;
+        border-right: none;
+        border-bottom: 1px solid @main-color__main-fonts;
+        border-left: 1px solid @main-color__main-fonts;
+    }
+    &__text-block {
+        border: 1px solid @main-color__main-fonts;
+        font-size: 14px;
+        background-color: @main-color__header;
+    }
+    &__image {
+        width: 98%;
+        height: 75%;
+        margin: 2% 1% auto 1%;
+        border: 1px solid @main-color__main-fonts;
+    }
+    &__text-block {
+        width: 100%;
+        padding: 5% 1% 2% 4%;
+        text-align: left;
+    }
+    &__swipe-left {
+        .swipe-arrow-tepmlate(3%; url("../img/keyboard-left-arrow-button_icon-icons.com_72692.svg"); left);
+        &:hover {
+            background-image: url("../img/keyboard-left-arrow-button_icon-icons.com_72692_2.svg");
+        }
+    }
+    &__swipe-right {
+        .swipe-arrow-tepmlate(38%; url("../img/keyboard-right-arrow-button-1_icon-icons.com_72690.svg"); right);
+        &:hover {
+            background-image: url("../img/keyboard-right-arrow-button-1_icon-icons.com_72690_2.svg");
+        }
+    }
+}
+// Окно с информацией
+.info-window {
+    max-width: 65%;
+    max-height: 95%;
+    margin: auto;
+    position: absolute;
+    top: 0; 
+    left: 0; 
+    bottom: 0; 
+    right: 0;
+    border: 1px solid @main-color__secondary-fonts;
+    background-color: @main-color__secondary-fonts;
+    overflow: scroll;
+    overflow-x: hidden;
+    &__info {
+        max-width: 90%;
+        max-height: 80%;
+        margin: 2% auto;
+        top: 0; 
+        left: 0; 
+        bottom: 0; 
+        right: 0;
+        text-align: left;
+    }
+}
+
+// МОДИФИКАТОРЫ:
+// Копия
+.copy {
+    transition: all 0.2s ease;
+    cursor: pointer;
+    &:hover {
+        color: @main-color__primary-button;
+    }
+}
+// Заголовки
+.header {
+    margin-top: 3%;
+    font-size: 26px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    &-extract {
+        margin-top: 0;
+        margin-top: 3%;
+        font-size: 26px;
+        transition: all 0.2s ease;
+    }
+    &-roll {
+        color: lighten(@main-color__main-fonts, 30%);
+    }
+    &:hover {
+        color: lighten(@main-color__main-fonts, 30%);
+    }
+    &:hover .arrow {
+        transition: all 0.2s ease;
+        background-image: url("../img/down_icon-icons.com_61209_2.svg");
+    }    
+}
+// Опасные заголовки
+.header-alert {
+    margin-top: 3%;
+    font-size: 26px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: @main-color__alert;
+    &:hover {
+        color: lighten(@main-color__alert, 20%);
+    }
+    &:hover .arrow-alert {
+        transition: all 0.2s ease;
+        background-image: url("../img/down_icon-icons.com_61209_red_2.svg");
+    }
+    &-roll {
+        color: lighten(@main-color__alert, 20%);
+    }
+}
+// Малые заголовки
+.header-two {
+    margin-top: 2%;
+    margin-bottom: 1%;
+    font-size: 20px;
+    &-alert {
+        color: @main-color__alert;
+    }
+}
+// Подзаголовки
+.subheader {
+    color: @main-color__main-fonts;
+    padding: 1%;
+    border-bottom: 1px solid lighten(black, 80%);
+}
+// Текст основной информации
+.main-info {
+    padding: 1%;
+    font-weight: 700;
+    border-bottom: 1px solid lighten(black, 80%);
+    &-alert {
+        color: @main-color__alert;
+        font-weight: 500;
+        padding: 1%;
+        border-bottom: none;
+    }
+}
+// Строки с совпадениями
+.main-info-coincid {
+    padding: 1%;
+    border-bottom: 1px solid lighten(black, 80%);
+}
+// Заголовки залог/прекращение
+.alert-info {
+    color: @main-color__alert;
+    font-size: 22px;
+    font-weight: 500;
+}
+// Не определенное значение
+.alert-text {
+    color: @main-color__alert;
+    font-weight: 700;
+}
+// Сетки
+.grid-container-st {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: minmax(auto, auto);
+    grid-gap: 0;
+    &__single {
+        grid-column-start: 1;
+        grid-column-end: 7;
+    }
+    &__left {
+        grid-column-start: 1;
+        grid-column-end: 3;
+    }
+    &__right {
+        grid-column-start: 3;
+        grid-column-end: 7;
+    }
+    &__right-spec {
+        grid-column-start: 3;
+        grid-column-end: 5;
+    }
+}
+.grid-container-spec {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-auto-rows: minmax(auto, auto);
+    grid-gap: 0;
+    &__left {
+        grid-column-start: 1;
+        grid-column-end: 7;
+    }
+    &__right {
+        grid-column-start: 7;
+        grid-column-end: 9;
+    }
+}
+// Дополнительные модиф.
+.add-padd {
+    padding-top: 1%;
+}
+.add-marg {
+    margin-top: 1%;
+}
+
+// Скролл
+::-webkit-scrollbar {
+    width: 12px;
+}
+::-webkit-scrollbar-thumb {
+    background-color: @main-color__scroll;
+    border-radius: 1px;
+    transition: all 0.2s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: darken(@main-color__scroll, 20%);
+}
+
+::-webkit-scrollbar-button:vertical:start:decrement {
+    background-color: @main-color__scroll;
+}
+::-webkit-scrollbar-button:vertical:end:increment {
+    background-color: @main-color__scroll;
+}
+
+
+
+
+

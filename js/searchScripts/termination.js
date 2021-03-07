@@ -8,7 +8,7 @@ const findTerminationRecord = (array, indexes) => {
         switch (true) {
             case array[firstIndex].includes('Сведения о прекращении'):
                 record = {
-                    'Статус': 'Ликвидировано',
+                    'Статус': 'Прекратило деятельность',
                     'Способ прекращения': 'Не определен',
                     'Дата прекращения': 'Не определена',
                     'ГРН': 'Не определен',
@@ -16,7 +16,7 @@ const findTerminationRecord = (array, indexes) => {
                 break;
             case array[firstIndex].includes('Сведения о состоянии юридического'):
                 record = {
-                    'Статус': 'В процессе ликвидации',
+                    'Статус': 'В процессе прекращения',
                     'Состояние': 'Не определено',
                     'Номер и дата решения': 'Не определены',
                     'Сведения о публикации': 'Не определены',
@@ -27,26 +27,26 @@ const findTerminationRecord = (array, indexes) => {
         for (let i = firstIndex; i < lastIndex; i++) {
             let currentValue = 0;
             switch (true) {
-                case record['Статус'] === 'Ликвидировано' && array[i].includes('Способ прекращения'):
+                case record['Статус'] === 'Прекратило деятельность' && array[i].includes('Способ прекращения'):
                     currentValue = createValue(i, lastIndex, 'прекращения', array[i], array, false);
                     record['Способ прекращения'] = currentValue;
                     break;
-                case record['Статус'] === 'Ликвидировано' && array[i].includes('Дата прекращения'):
+                case record['Статус'] === 'Прекратило деятельность' && array[i].includes('Дата прекращения'):
                     currentValue = createValue(i, lastIndex, 'прекращения', array[i], array, false);
                     record['Дата прекращения'] = currentValue;
                     break;
-                case record['Статус'] === 'В процессе ликвидации' && array[i].includes('Состояние'):
+                case record['Статус'] === 'В процессе прекращения' && array[i].includes('Состояние'):
                     currentValue = createValue(i, lastIndex, 'Состояние', array[i], array, false);
                     record['Состояние'] = currentValue;
                     break;
-                case record['Статус'] === 'В процессе ликвидации' && array[i].includes('Номер и дата решения'):
+                case record['Статус'] === 'В процессе прекращения' && array[i].includes('Номер и дата решения'):
                     currentValue = createValue(i + 1, lastIndex, 'ЕГРЮЛ', array[i] + array[i + 1], array, false);
                     if (currentValue[0] === ' ') {
                         currentValue = currentValue.slice(1);
                     }
                     record['Номер и дата решения'] = currentValue;
                     break;
-                case record['Статус'] === 'В процессе ликвидации' && array[i].includes('Сведения о публикации'):
+                case record['Статус'] === 'В процессе прекращения' && array[i].includes('Сведения о публикации'):
                     currentValue = createValue(i + 2, lastIndex, 'ЕГРЮЛ', array[i] + array[i + 1] + array[i + 2], array, false);
                     if (currentValue[0] === ' ') {
                         currentValue = currentValue.slice(1);

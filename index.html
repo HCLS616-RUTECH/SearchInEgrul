@@ -5,6 +5,7 @@
 	<meta charset="utf-8">
 	<title>Анализ выписки из ЕГРЮЛ</title>
 	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link rel="shortcut icon" href="img/free-icon-notes-3884317.svg" type="image/svg">
 </head>
 
 <body>
@@ -12,57 +13,77 @@
 		<h1>Анализ данных в Выписке из Единого государственного реестра юридических лиц</h1>
 	</header>
 	<main>
+		<!-- Поле ввода текста -->
 		<div class="text-area">
 			<div class="text-area__inside">
 				<div>
-					<textarea name="txt" id="tXt" rows="15" placeholder="Вставьте текст"></textarea>
+					<textarea name="txt" class="text-area__inside-textarea" id="tXt" rows="15"
+						placeholder="Вставьте текст"></textarea>
 				</div>
 				<div>
-					<button id="btn">АНАЛИЗ</button>
+					<button class="text-area__button" id="btn">АНАЛИЗ</button>
 				</div>
 			</div>
 		</div>
+		<!-- Блок с ссылкой на сайт налоговой -->
 		<fieldset class="link">
 			<legend class="link__legend">Заказать Выписку из ЕГРЮЛ с сайта ФНС:</legend>
 			<div class="link__block"><a class="link__a" href="https://egrul.nalog.ru/index.html"
 					target="_blank">https://egrul.nalog.ru/index.html</a></div>
 		</fieldset>
-		<!-- <div>
-			<input type="radio" name="animationRadio" id="animationOff" checked>
-			<input type="radio" name="animationRadio" id="animationOn">
-			<span>(анимация)</span>
-		</div> -->
+		<!-- Блок с демонстрацией работы -->
+		<div class="demonstration">
+			<div class="demonstration__button-block">
+				<button class="demonstration__button" id="btnDemonstration">Демонстрация работы</button>
+			</div>
+		</div>
+		<!-- Переходный буфер для копирования -->
 		<div class="buffer">
 			<input type="text" class="buffer__input" id="bufferText" />
 		</div>
-
+		<!-- Фон для окон -->
 		<div class="backdrop-primary visually-hidden" id="backdropPrimary"></div>
-		<div class="backdrop-alert visually-hidden" id="backdropAlert"></div>
-
+		<!-- Окно с ошибой -->
 		<div class="error-window visually-hidden" id="errorWindow" close-flag>
-			<div class="close-button-container">
-				<button class="close-button" id="closeErrorButton" close-button></button>
-			</div>
+			<button class="close-button" close-button></button>
 			<div class="error-window__main-part">
 				<div class="error-window__text-error">Ошибка</div>
 				<div class="error-window__text-text">(переданы некорректные данные)</div>
-				<button class="close-button-ok" close-button>OK</button>
+				<button class="error-window__button-ok" close-button>OK</button>
 			</div>
 		</div>
+		<!-- Демонстрация работы -->
+		<div class="demonstration-window visually-hidden" id="demonstrationWindow" close-flag>
+			<button class="close-button" close-button></button>
+			<div class="demonstration-window__inside-block grid-container-spec">
+				<div class="demonstration-window__image-block grid-container-spec__left">
+					<img class="demonstration-window__image" src="img/demonstration/1.jpg"
+						alt="Условия для работы приложения." id="image">
+					<button class="demonstration-window__swipe-left" left-swipe-flag></button>
+					<button class="demonstration-window__swipe-right" right-swipe-flag></button>
+				</div>
+				<div class="demonstration-window__text-block grid-container-spec__right" id="textBlock">1. Для работы
+					приложения потребуется Выписка из Единого государственного реестра юридических лиц (ЕГРЮЛ). Выписку
+					можно бесплатно получить с официального сайта Федеральной налоговой службы (ФНС) по следующему
+					адресу: https://egrul.nalog.ru/index.html. Также, для удобства, ссылка на указанный сайт размещена
+					на основной странице приложения.</div>
+			</div>
+		</div>
+		<!-- Окно с информацией -->
 		<div class="info-window visually-hidden" id="infoWindow" close-flag>
-			<button class="close-button close-button-info" id="closeInfoButton" close-button></button>
-			<div class="one-grid-container">
-				<div class="one-grid-container info" id="information">
+			<button class="close-button close-button-info" close-button></button>
+			<div>
+				<div class="info-window__info" id="information">
 					<!-- Загаловок с ликвидацией и залогом -->
-					<div class="one-grid-container" id="pledgeAndLiquidationStrings" delete-flag></div>
+					<div id="pledgeAndLiquidationStrings" delete-flag></div>
 					<!-- Реквизиты выписки -->
 					<div class="header-extract copy" id="extract" copy-text-flag></div>
 					<!--====================================================================================================-->
 					<!-- Основная информация 1 -->
-					<div class="one-grid-container" container-flag>
+					<div container-flag>
 						<div class="header" roll-flag>Основные данные: <div class="arrow"></div>
 						</div>
-						<div class="grid-container-st" grid-flag>
+						<div class="grid-container-st add-marg" grid-flag>
 							<div class="grid-container-st__left subheader">Полное наименование:</div>
 							<div class="grid-container-st__right main-info copy" id="fullName" copy-text-flag></div>
 							<div class="grid-container-st__left subheader">Сокращенное наименование:</div>
@@ -87,10 +108,10 @@
 					</div>
 					<!--====================================================================================================-->
 					<!-- Адрес -->
-					<div class="one-grid-container" id="addressStrings" delete-flag></div>
+					<div id="addressStrings" delete-flag></div>
 					<!--====================================================================================================-->
 					<!-- Совпадения слов -->
-					<div class="one-grid-container" container-flag>
+					<div container-flag>
 						<div class="header" roll-flag>Количество совпадений по поиску слова: <div class="arrow"></div>
 						</div>
 						<div class="grid-container-st main-info-coincid" grid-flag>
@@ -113,18 +134,18 @@
 						</div>
 					</div>
 					<!--====================================================================================================-->
-					<div class="one-grid-container" delete-flag container-flag>
+					<div delete-flag container-flag>
 						<div class="header" not-delete-flag roll-flag>Списки строк с совпадениями по слову:
 							<div class="arrow"></div>
 						</div>
-						<div id="listsStrings" delete-flag>
+						<div class="add-marg" id="listsStrings" delete-flag>
 
 						</div>
 					</div>
 					<!--====================================================================================================-->
-					<div class="one-grid-container" delete-flag container-flag>
+					<div delete-flag container-flag>
 						<div class="header" not-delete-flag to-change-flag roll-flag>Руководитель(и) юридического лица,
-							действующий без доверенности: <span class="weight-text">0</span>
+							действующий без доверенности: <span roll-span>0</span>
 							<div class="arrow"></div>
 						</div>
 						<div id="directorStrings" delete-flag>
@@ -132,28 +153,30 @@
 						</div>
 					</div>
 					<!--====================================================================================================-->
-					<div class="one-grid-container" delete-flag container-flag>
-						<div class="header" not-delete-flag to-change-flag roll-flag>Участники (учредители): <span
-								class="weight-text">0</span>
+					<div delete-flag container-flag>
+						<div class="header" not-delete-flag to-change-flag roll-flag>Участники (учредители):
+							<span roll-span>0</span>
 							<div class="arrow"></div>
 						</div>
 						<div id="foundersStrings" delete-flag>
 
 						</div>
 					</div>
-					<div class="one-grid-container" id="stockRegisterStrings" delete-flag container-flag>
+					<!--====================================================================================================-->
+					<div id="stockRegisterStrings" delete-flag container-flag>
 
 					</div>
-					<div class="one-grid-container" delete-flag container-flag>
-						<div class="header" not-delete-flag to-change-flag roll-flag>Устав: <span
-								class="weight-text">0</span>
+					<!--====================================================================================================-->
+					<div delete-flag container-flag>
+						<div class="header" not-delete-flag to-change-flag roll-flag>Устав: <span roll-span>0</span>
 							<div class="arrow"></div>
 						</div>
 						<div id="statutStrings" delete-flag>
 
 						</div>
 					</div>
-					<div class="one-grid-container" id="terminationRecordStrings" delete-flag container-flag>
+					<!--====================================================================================================-->
+					<div id="terminationRecordStrings" delete-flag container-flag>
 
 					</div>
 				</div>
@@ -163,14 +186,8 @@
 			<div>Текст скопирован</div>
 		</div>
 
-		<!-- <button class="close-button spec-btn-snack"><svg viewBox="0 0 15 15"
-			style="width: 15px; height: 15px; display: inline-block; user-select: none; fill: #262626;">
-			<path
-				d="M0 15V0v15zM15 0v15V0zM8.349 7.5l5.222 5.222c.195.195.195.512 0 .707l-.142.142c-.195.195-.512.195-.707 0L7.5 8.349l-5.222 5.222c-.195.195-.512.195-.707 0l-.142-.142c-.195-.195-.195-.512 0-.707L6.651 7.5 1.429 2.278c-.195-.195-.195-.512 0-.707l.142-.142c.195-.195.512-.195.707 0L7.5 6.651l5.222-5.222c.195-.195.512-.195.707 0l.142.142c.195.195.195.512 0 .707L8.349 7.5z"
-				fill-rule="evenodd"></path>
-		</svg></button> -->
 		<div>
-			<!-- Залог/Исключение -->
+			<!-- Опасные заголовки -->
 			<template id="pledgeAndLiquidation">
 				<div class="alert-info" data-title="залог">ОБНАРУЖЕНО ОБРЕМЕНЕНИЕ</div>
 				<div class="alert-info" data-title="ликвид">ОБНАРУЖЕНЫ СВЕДЕНИЯ О ПРЕКРАЩЕНИИ ДЕЯТЕЛЬНОСТИ</div>
@@ -230,7 +247,7 @@
 					<div class="grid-container-st__left subheader">Доверительное управление: <span></span></div>
 					<div class="grid-container-st__right main-info-coincid"></div>
 				</div>
-				<div class="ppp copy" data-title="Строка" copy-text-flag></div>
+				<div class="add-padd copy" data-title="Строка" copy-text-flag></div>
 				<div class="attention" data-title="Внимание">
 					<div class="attention__symbol"></div>
 					<div class="attention__text-container">
@@ -245,7 +262,7 @@
 			<template id="director">
 				<div class="main-info-alert" data-title="Неопределены">Руководитель юридического лица, действующий
 					без доверенности не определен.</div>
-				<div class="grid-container-st ppp" data-title="Единоличный исполнительный орган">
+				<div class="grid-container-st add-padd" data-title="Единоличный исполнительный орган">
 					<div class="grid-container-st__left subheader">Тип руководителя:</div>
 					<div class="grid-container-st__right main-info copy" copy-text-flag>Единоличный исполнительный орган
 					</div>
@@ -256,7 +273,7 @@
 					<div class="grid-container-st__left subheader">ИНН</div>
 					<div class="grid-container-st__right main-info copy" data-title="ИНН" copy-text-flag></div>
 				</div>
-				<div class="grid-container-st ppp" data-title="Управляющая организация">
+				<div class="grid-container-st add-padd" data-title="Управляющая организация">
 					<div class="grid-container-st__left subheader">Тип руководителя:</div>
 					<div class="grid-container-st__right main-info copy" copy-text-flag>Управляющая организация</div>
 					<div class="grid-container-st__left subheader">Полное наименование</div>
@@ -272,7 +289,7 @@
 			<!-- Участники -->
 			<template id="founders">
 				<div class="main-info-alert" data-title="Неопределены">Участники (учредители) не определены.</div>
-				<div class="grid-container-st ppp" data-title="Физическое лицо">
+				<div class="grid-container-st add-padd" data-title="Физическое лицо">
 					<div class="grid-container-st__left subheader">Участник (учредитель):</div>
 					<div class="grid-container-st__right main-info copy">Физическое лицо</div>
 					<div class="grid-container-st__left subheader">Фамилия, имя, отчество:</div>
@@ -285,7 +302,7 @@
 					<div class="grid-container-st__right main-info copy" data-title="Номинальная стоимость доли"
 						copy-text-flag></div>
 				</div>
-				<div class="grid-container-st ppp" data-title="Юридическое лицо">
+				<div class="grid-container-st add-padd" data-title="Юридическое лицо">
 					<div class="grid-container-st__left subheader">Участник (учредитель):</div>
 					<div class="grid-container-st__right main-info copy">Юридическое лицо</div>
 					<div class="grid-container-st__left subheader">Полное наименование:</div>
@@ -301,7 +318,7 @@
 					<div class="grid-container-st__right main-info copy" data-title="Номинальная стоимость доли"
 						copy-text-flag></div>
 				</div>
-				<div class="grid-container-st ppp" data-title="Иностранное юридическое лицо">
+				<div class="grid-container-st add-padd" data-title="Иностранное юридическое лицо">
 					<div class="grid-container-st__left subheader">Участник (учредитель):</div>
 					<div class="grid-container-st__right main-info copy">Иностранное юридическое лицо</div>
 					<div class="grid-container-st__left subheader">Полное наименование:</div>
@@ -329,7 +346,7 @@
 					<div class="grid-container-st__right main-info copy"
 						data-title="Адрес (место нахождения) в стране происхождения" copy-text-flag></div>
 				</div>
-				<div class="grid-container-st ppp" data-title="Доля общества">
+				<div class="grid-container-st add-padd" data-title="Доля общества">
 					<div class="grid-container-st__single header-two-alert">Доля, принадлежащая обществу:</div>
 					<div class="grid-container-st__left subheader">Размер доли:</div>
 					<div class="grid-container-st__right main-info copy" data-title="Размер доли" copy-text-flag></div>
@@ -339,10 +356,11 @@
 				</div>
 				<div class="grid-container-st__single header-two" data-title="Подзаголовок"></div>
 			</template>
+			<!-- Держатель реестра акционеров -->
 			<template id="stockRegister">
 				<div class="main-info-alert" data-title="Неопределены">Держатель реестра акционеров не определен.
 				</div>
-				<div class="grid-container-st" data-title="Держатель акций" grid-flag>
+				<div class="grid-container-st add-marg" data-title="Держатель акций" grid-flag>
 					<div class="grid-container-st__left subheader">Полное наименование:</div>
 					<div class="grid-container-st__right main-info copy" data-title="Полное наименование"
 						copy-text-flag></div>
@@ -355,9 +373,10 @@
 					акционеров акционерного общества <div class="arrow"></div>
 				</div>
 			</template>
+			<!-- Устав -->
 			<template id="statut">
 				<div class="main-info-alert" data-title="Неопределены">Сведения об уставе не обнаружены.</div>
-				<div class="grid-container-st" data-title="Устав" grid-flag>
+				<div class="grid-container-st add-marg" data-title="Устав" grid-flag>
 					<div class="grid-container-st__left subheader">Наименование документа:</div>
 					<div class="grid-container-st__right main-info copy" data-title="Наименование документа"
 						copy-text-flag></div>
@@ -373,12 +392,13 @@
 				</div>
 				<div class="grid-container-st__single header-two" data-title="Подзаголовок"></div>
 			</template>
+			<!-- Прекращение -->
 			<template id="terminationRecord">
 				<div class="main-info-alert" data-title="Неопределены">Сведения о прекращении деятельности
 					юридического лица не обнаружены.</div>
-				<div class="grid-container-st" data-title="В процессе ликвидации" grid-flag>
+				<div class="grid-container-st add-marg" data-title="В процессе прекращения" grid-flag>
 					<div class="grid-container-st__left subheader">Статус:</div>
-					<div class="grid-container-st__right main-info copy" copy-text-flag>В процессе ликвидации.</div>
+					<div class="grid-container-st__right main-info copy" copy-text-flag>В процессе прекращения.</div>
 					<div class="grid-container-st__left subheader">Номер и дата решения:</div>
 					<div class="grid-container-st__right main-info copy" data-title="Номер и дата решения"
 						copy-text-flag></div>
@@ -390,9 +410,9 @@
 					<div class="grid-container-st__right main-info copy" data-title="Сведения о публикации"
 						copy-text-flag></div>
 				</div>
-				<div class="grid-container-st" data-title="Ликвидировано" grid-flag>
+				<div class="grid-container-st add-marg" data-title="Прекратило деятельность" grid-flag>
 					<div class="grid-container-st__left subheader">Статус:</div>
-					<div class="grid-container-st__right main-info copy" copy-text-flag>Ликвидировано.</div>
+					<div class="grid-container-st__right main-info copy" copy-text-flag>Прекратило деятельность.</div>
 					<div class="grid-container-st__left subheader">Дата прекращения:</div>
 					<div class="grid-container-st__right main-info copy" data-title="Дата прекращения" copy-text-flag>
 					</div>
